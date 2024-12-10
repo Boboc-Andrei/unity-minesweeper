@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 public class Cell {
     public int Row;
     public int Col;
+
     public bool IsRevealed = false;
     public bool IsMine;
-    public int NeighbouringMines;
     public bool IsFlagged = false;
+
+    public int NeighbouringMines;
+    public int NeighbouringFlags;
 
     public Cell(int row, int col, bool isMine) {
         Row = row;

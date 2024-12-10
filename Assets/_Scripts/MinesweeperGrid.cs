@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class MinesweeperGrid {
@@ -66,5 +67,13 @@ public class MinesweeperGrid {
     
     private bool IsValidPosition (int row, int col) {
         return (row >= 0 && row < Rows && col >= 0 && col < Columns);
+    }
+
+    internal void ToggleFlag(Cell cell, bool isFlagged) {
+        cell.IsFlagged = isFlagged;
+
+        foreach(Cell neighbour in GetCellNeighbours(cell)) {
+            neighbour.NeighbouringFlags += isFlagged ? 1 : -1;
+        }
     }
 }

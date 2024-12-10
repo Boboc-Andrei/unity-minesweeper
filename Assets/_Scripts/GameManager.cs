@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour {
 
     public void RevealCell(Cell cell) {
         if (cell.IsMine) {
+            cell.IsRevealed = true;
             UIManager.RevealMineCell(cell.Row, cell.Col);
             GameOver();
         }
@@ -96,16 +97,23 @@ public class GameManager : MonoBehaviour {
     private void ToggleCellFlag(Cell cell) {
 
         if (cell.IsFlagged) {
-            cell.IsFlagged = false;
+            Grid.ToggleFlag(cell, false);
             UIManager.UnflagCell(cell.Row, cell.Col);
         }
         else {
-            cell.IsFlagged = true;
+            Grid.ToggleFlag(cell, true);
             UIManager.FlagCell(cell.Row, cell.Col);
         }
     }
 
     private void TryRevealNeighbours(Cell cell) {
-        throw new NotImplementedException();
+        if (cell.NeighbouringFlags != cell.NeighbouringMines) return;
+        if (cell.IsMine) return;
+
+        foreach (Cell neighbour in Grid.GetCellNeighbours(cell)) {
+            if (!neighbour.IsRevealed && !neighbour.IsFlagged) {
+                RevealCell(neighbour);
+            }
+        }
     }
 }
