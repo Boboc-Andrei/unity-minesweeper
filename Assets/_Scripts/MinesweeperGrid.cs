@@ -20,12 +20,20 @@ public class MinesweeperGrid {
     }
 
     public void InitializeFields() {
-        bool[,] mines = Generator.GenerateMines(Rows, Columns);
-
         for (int r = 0; r < Rows; r++) {
             for (int c = 0; c < Columns; c++) {
-                Cell newCell = new Cell(r, c, mines[r, c]);
+                Cell newCell = new Cell(r, c, false);
                 Fields[r, c] = newCell;
+            }
+        }
+    }
+
+    public void PlaceMines(Cell guaranteedFree) {
+
+        bool[,] minesMatrix = Generator.GenerateMines(Rows, Columns, guaranteedFree);
+        for (int r = 0; r < Rows; r++) {
+            for (int c = 0; c < Columns; c++) {
+                Fields[r, c].IsMine = minesMatrix[r, c];
             }
         }
 
@@ -34,6 +42,7 @@ public class MinesweeperGrid {
                 Fields[r,c].NeighbouringMines = GetCellNeighbours(Fields[r,c], MinesOnly: true).Count;
             }
         }
+
     }
 
     public List<Cell> GetCellNeighbours(Cell cell, bool MinesOnly = false) {

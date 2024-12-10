@@ -14,7 +14,7 @@ public class GridGenerator {
         TotalMines = totalMines;
     }
 
-    public bool[,] GenerateMines(int rows, int cols) {
+    public bool[,] GenerateMines(int rows, int cols, Cell guaranteedFree) {
 
         if (TotalMines >= rows * cols) {
             Debug.LogError("Eror: Total mines exceeded grid size");
@@ -23,9 +23,11 @@ public class GridGenerator {
         bool[,] mines = new bool[rows, cols];
         List<(int, int)> availableCells = new List<(int, int)>();
 
-        for(int r = 0; r<rows;r++) {
-            for (int c = 0; c<cols;c++) {
-                availableCells.Add((r, c));
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (Mathf.Abs(r - guaranteedFree.Row) > 1 && Mathf.Abs(c - guaranteedFree.Col) > 1) {
+                    availableCells.Add((r, c));
+                }
             }
         }
 

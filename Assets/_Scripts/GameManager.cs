@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour {
     public GridGenerator GridGenerator;
     public UIManager UIManager;
 
+    public bool GameStarted = false;
 
     void Start() {
         UIManager.InitializeGridUI(GridRows, GridCols);
@@ -27,7 +28,14 @@ public class GameManager : MonoBehaviour {
     }
 
     public void OnCellClicked(int row, int col) {
+
         Cell cell = Grid.Fields[row, col];
+
+        if(!GameStarted) {
+            GameStarted = true;
+            Grid.PlaceMines(guaranteedFree: cell);
+        }
+
         if (UIManager == null) {
             Debug.LogError("UIManager is NULL");
         }
