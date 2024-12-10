@@ -450,8 +450,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridRows: 16
   GridCols: 16
-  Mines: 1
+  Mines: 40
   UIManager: {fileID: 2126225831}
+  GameStarted: 0
 --- !u!4 &1556813274
 Transform:
   m_ObjectHideFlags: 0

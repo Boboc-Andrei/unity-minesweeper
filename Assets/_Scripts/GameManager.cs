@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
 
         Cell cell = Grid.Fields[row, col];
 
-        if(!GameStarted) {
+        if (!GameStarted) {
             GameStarted = true;
             Grid.PlaceMines(guaranteedFree: cell);
         }
@@ -43,32 +43,31 @@ public class GameManager : MonoBehaviour {
             Debug.LogError("Cell is NULL");
         }
 
-        RevealCell(cell);
+        if (cell.IsRevealed) {
+            TryRevealNeighbours(cell);
+        }
+        else {
+            if (!cell.IsFlagged) {
+                RevealCell(cell);
+            }
+        }
+    }
+
+    internal void OnCellRightClicked(int row, int col) {
+        Cell cell = Grid.Fields[row, col];
+        if (!cell.IsRevealed) {
+            ToggleCellFlag(cell);
+        }
     }
 
     public void RevealCell(Cell cell) {
-        if (cell.IsRevealed || cell.IsFlagged) return;
-
-        int row = cell.Row;
-        int col = cell.Col;
-
-
         if (cell.IsMine) {
-            print($"Clicked on mine at {row}, {col}");
-            UIManager.RevealMineCell(row, col);
+            UIManager.RevealMineCell(cell.Row, cell.Col);
             GameOver();
         }
         else {
-            int neighbouringMines = Grid.Fields[row, col].NeighbouringMines;
-
-            if (neighbouringMines == 0) {
-                CascadeReveal(cell);
-            }
-            else {
-                RevealNeighbouredCell(cell);
-            }
+            CascadeReveal(cell);
         }
-        cell.IsRevealed = true;
     }
 
     private void CascadeReveal(Cell cell) {
@@ -80,48 +79,33 @@ public class GameManager : MonoBehaviour {
             if (currentCell.IsRevealed) continue;
 
             currentCell.IsRevealed = true;
+            UIManager.RevealEmptyCell(currentCell.Row, currentCell.Col, currentCell.NeighbouringMines);
 
             if (currentCell.NeighbouringMines == 0) {
-                UIManager.RevealEmptyCell(currentCell.Row, currentCell.Col);
                 foreach (Cell neighbour in Grid.GetCellNeighbours(currentCell)) {
                     queue.Enqueue(neighbour);
                 }
             }
-            else {
-                RevealNeighbouredCell(currentCell);
-            }
-
         }
-
-    }
-
-    private void RevealNeighbouredCell(Cell cell) {
-        UIManager.RevealNeighbouredCell(cell.Row, cell.Col, cell.NeighbouringMines);
     }
 
     public void GameOver() {
         print("Game over sequence to be implemented");
     }
 
-    internal void OnCellRightClicked(int row, int col) {
-        Cell cell = Grid.Fields[row,col];
-        if(cell.IsRevealed) {
-            print("revealing vecinity of mine-adjacent cells to be implemented");
-        }
-        else {
-            ToggleCellFlag(cell);
-        }
-    }
-
     private void ToggleCellFlag(Cell cell) {
 
-        if(cell.IsFlagged) {
+        if (cell.IsFlagged) {
             cell.IsFlagged = false;
-            UIManager.UnflagCell(cell.Row,cell.Col);
+            UIManager.UnflagCell(cell.Row, cell.Col);
         }
         else {
             cell.IsFlagged = true;
             UIManager.FlagCell(cell.Row, cell.Col);
         }
+    }
+
+    private void TryRevealNeighbours(Cell cell) {
+        throw new NotImplementedException();
     }
 }

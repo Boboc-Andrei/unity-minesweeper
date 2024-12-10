@@ -51,35 +51,37 @@ public class UIManager : MonoBehaviour {
         gameManager.OnCellClicked(row, col);
     }
 
-    public void RevealEmptyCell(int row, int col) {
+    public void RevealEmptyCell(int row, int col, int neighbouringMines) {
         Button cell = cells[row, col];
 
-        ColorUtility.TryParseHtmlString("#808080", out Color color);
-        cell.style.backgroundColor = new StyleColor(color);
+        //ColorUtility.TryParseHtmlString("#808080", out Color color);
+        //cell.style.backgroundColor = new StyleColor(color);
 
+        cell.AddToClassList("cell-empty");
+
+        if (neighbouringMines > 0) {
+            cell.text = neighbouringMines.ToString();
+        }
     }
 
     internal void RevealMineCell(int row, int col) {
         Button cell = cells[row, col];
 
-        ColorUtility.TryParseHtmlString("#801616", out Color color);
-        cell.style.backgroundColor = new StyleColor(color);
-    }
+        //ColorUtility.TryParseHtmlString("#801616", out Color color);
+        //cell.style.backgroundColor = new StyleColor(color);
 
-    internal void RevealNeighbouredCell(int row, int col, int neighbouringMines) {
-        Button cell = cells[row, col];
-
-        ColorUtility.TryParseHtmlString("#808080", out Color color);
-        cell.style.backgroundColor = new StyleColor(color);
-        cell.text = neighbouringMines.ToString();
-
+        cell.AddToClassList("cell-mine");
     }
 
     internal void FlagCell(int row, int col) {
         print($"cell {row}, {col} flagged");
+        Button cell = cells[row, col];
+        cell.AddToClassList("cell-flagged");
     }
 
     internal void UnflagCell(int row, int col) {
         print($"cell {row}, {col} unflagged");
+        Button cell = cells[row, col];
+        cell.RemoveFromClassList("cell-flagged");
     }
 }
