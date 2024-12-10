@@ -30,8 +30,21 @@ public class UIManager : MonoBehaviour {
                 int c = col;
 
                 button.clicked += () => OnCellClicked(r, c);
+
+                button.RegisterCallback<PointerDownEvent>(evt => {
+                    if (evt.button == 0) {
+                        OnCellClicked(r, c);
+                    }
+                    else if (evt.button == 1) {
+                        OnCellRightClicked(r, c);
+                    }
+                });
             }
         }
+    }
+
+    private void OnCellRightClicked(int row, int col) {
+        gameManager.OnCellRightClicked(row, col);
     }
 
     public void OnCellClicked(int row, int col) {
@@ -39,7 +52,7 @@ public class UIManager : MonoBehaviour {
     }
 
     public void RevealEmptyCell(int row, int col) {
-        Button cell = cells[row,col];
+        Button cell = cells[row, col];
 
         ColorUtility.TryParseHtmlString("#808080", out Color color);
         cell.style.backgroundColor = new StyleColor(color);
@@ -51,5 +64,22 @@ public class UIManager : MonoBehaviour {
 
         ColorUtility.TryParseHtmlString("#801616", out Color color);
         cell.style.backgroundColor = new StyleColor(color);
+    }
+
+    internal void RevealNeighbouredCell(int row, int col, int neighbouringMines) {
+        Button cell = cells[row, col];
+
+        ColorUtility.TryParseHtmlString("#808080", out Color color);
+        cell.style.backgroundColor = new StyleColor(color);
+        cell.text = neighbouringMines.ToString();
+
+    }
+
+    internal void FlagCell(int row, int col) {
+        print($"cell {row}, {col} flagged");
+    }
+
+    internal void UnflagCell(int row, int col) {
+        print($"cell {row}, {col} unflagged");
     }
 }

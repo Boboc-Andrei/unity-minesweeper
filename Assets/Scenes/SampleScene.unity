@@ -450,7 +450,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridRows: 16
   GridCols: 16
-  Mines: 40
+  Mines: 1
   UIManager: {fileID: 2126225831}
 --- !u!4 &1556813274
 Transform:

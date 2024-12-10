@@ -18,10 +18,4 @@ public class MinesweeperGrid {
         Generator = generator;
         Fields = new Cell[Rows, Columns];
     }
-
-
-    internal void GenerateMines() {
-        if (Fields == null) print("fields are null"); 
-        Generator.PlaceMines(Fields);
-    }
 }

@@ -11,6 +11,7 @@ public class Cell {
     public bool IsRevealed = false;
     public bool IsMine;
     public int NeighbouringMines;
+    public bool IsFlagged = false;
 
     public Cell(int row, int col, bool isMine) {
         Row = row;

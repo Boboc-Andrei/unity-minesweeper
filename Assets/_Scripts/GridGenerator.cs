@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -12,22 +14,30 @@ public class GridGenerator {
         TotalMines = totalMines;
     }
 
-    internal void PlaceMines(Cell[,] fields) {
-        if (fields == null)
-            Debug.Log("fields are null");
+    public bool[,] GenerateMines(int rows, int cols) {
 
-        var (rows, cols) = (fields.GetLength(0), fields.GetLength(1));
+        if (TotalMines >= rows * cols) {
+            Debug.LogError("Eror: Total mines exceeded grid size");
+        }
+
+        bool[,] mines = new bool[rows, cols];
+        List<(int, int)> availableCells = new List<(int, int)>();
+
+        for(int r = 0; r<rows;r++) {
+            for (int c = 0; c<cols;c++) {
+                availableCells.Add((r, c));
+            }
+        }
 
         for (int _ = 0; _ < TotalMines; _++) {
-            int mineRow, mineCol;
-            do {
-                mineRow = R.Next(0, rows);
-                mineCol = R.Next(0, cols);
+            int randomIndex;
+            randomIndex = R.Next(0, availableCells.Count);
+            var (mineRow, mineCol) = availableCells[randomIndex];
 
-            } while (!fields[mineRow, mineCol].IsMine);
-
-            fields[mineRow, mineCol].IsMine = true;
+            availableCells.RemoveAt(randomIndex);
+            mines[mineRow, mineCol] = true;
         }
+        return mines;
     }
 
 }
