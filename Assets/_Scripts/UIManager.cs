@@ -9,10 +9,13 @@ public class UIManager : MonoBehaviour {
     public GameManager gameManager;
 
     private Button[,] cells;
+    private Label mineCounter;
 
     public void InitializeGridUI(int rows, int cols) {
         root = GetComponent<UIDocument>().rootVisualElement;
         gridContainer = root.Q<GroupBox>("Grid");
+        mineCounter = root.Q<Label>("MineCounter");
+
         cells = new Button[rows, cols];
 
         for (int row = 0; row < rows; row++) {
@@ -53,10 +56,6 @@ public class UIManager : MonoBehaviour {
 
     public void RevealEmptyCell(int row, int col, int neighbouringMines) {
         Button cell = cells[row, col];
-
-        //ColorUtility.TryParseHtmlString("#808080", out Color color);
-        //cell.style.backgroundColor = new StyleColor(color);
-
         cell.AddToClassList("cell-empty");
 
         if (neighbouringMines > 0) {
@@ -66,22 +65,22 @@ public class UIManager : MonoBehaviour {
 
     internal void RevealMineCell(int row, int col) {
         Button cell = cells[row, col];
-
-        //ColorUtility.TryParseHtmlString("#801616", out Color color);
-        //cell.style.backgroundColor = new StyleColor(color);
-
         cell.AddToClassList("cell-mine");
     }
 
     internal void FlagCell(int row, int col) {
-        print($"cell {row}, {col} flagged");
         Button cell = cells[row, col];
         cell.AddToClassList("cell-flagged");
     }
 
     internal void UnflagCell(int row, int col) {
-        print($"cell {row}, {col} unflagged");
         Button cell = cells[row, col];
         cell.RemoveFromClassList("cell-flagged");
+    }
+
+    internal void UpdateMineCounter(int count) {
+        if (mineCounter == null) print("mine counter is null");
+
+        mineCounter.text = count.ToString();
     }
 }

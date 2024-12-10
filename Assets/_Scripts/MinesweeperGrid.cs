@@ -8,6 +8,8 @@ using UnityEngine;
 public class MinesweeperGrid {
     public Cell[,] Fields;
     public int TotalMines => Generator.TotalMines;
+    public int FlaggedCells = 0;
+
     public int Rows;
     public int Columns;
 

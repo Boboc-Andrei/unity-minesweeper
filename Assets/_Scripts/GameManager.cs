@@ -17,14 +17,19 @@ public class GameManager : MonoBehaviour {
 
     void Start() {
         UIManager.InitializeGridUI(GridRows, GridCols);
-
         InitializeGrid(GridRows, GridCols);
+        NewGame();
+    }
+
+    private void NewGame() {
+        Grid.InitializeFields();
+        UpdateMineCount();
+        GameStarted = false;
     }
 
     private void InitializeGrid(int GridRows, int GridCols) {
         GridGenerator = new GridGenerator(Mines);
         Grid = new MinesweeperGrid(GridRows, GridCols, GridGenerator);
-        Grid.InitializeFields();
     }
 
     public void OnCellClicked(int row, int col) {
@@ -97,13 +102,16 @@ public class GameManager : MonoBehaviour {
     private void ToggleCellFlag(Cell cell) {
 
         if (cell.IsFlagged) {
+            Grid.FlaggedCells--;
             Grid.ToggleFlag(cell, false);
             UIManager.UnflagCell(cell.Row, cell.Col);
         }
         else {
+            Grid.FlaggedCells++;
             Grid.ToggleFlag(cell, true);
             UIManager.FlagCell(cell.Row, cell.Col);
         }
+        UIManager.UpdateMineCounter(Grid.TotalMines - Grid.FlaggedCells);
     }
 
     private void TryRevealNeighbours(Cell cell) {
@@ -115,5 +123,8 @@ public class GameManager : MonoBehaviour {
                 RevealCell(neighbour);
             }
         }
+    }
+    private void UpdateMineCount() {
+        UIManager.UpdateMineCounter(Grid.TotalMines - Grid.FlaggedCells);
     }
 }

@@ -1,7 +1,10 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/GameUI_uss.uss?fileID=7433441132597879392&amp;guid=5db71d3136f81bd47be6f64f0734edb5&amp;type=3#GameUI_uss" />
     <engine:VisualElement name="Background" class="background" style="flex-grow: 1; background-color: rgb(155, 155, 155); align-items: stretch; justify-content: space-between;">
-        <engine:VisualElement name="Header" class="header" />
+        <engine:VisualElement name="Header" class="header" style="flex-direction: row;">
+            <engine:Label text="0" name="MineCounter" class="mines-counter" />
+            <engine:Button text="New Game" class="new-game-btn" />
+        </engine:VisualElement>
         <engine:GroupBox name="Grid" class="grid" />
         <engine:VisualElement name="Footer" class="footer" />
     </engine:VisualElement>
