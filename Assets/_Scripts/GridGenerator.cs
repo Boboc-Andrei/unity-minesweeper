@@ -25,7 +25,7 @@ public class GridGenerator {
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                if (Mathf.Abs(r - guaranteedFree.Row) > 1 && Mathf.Abs(c - guaranteedFree.Col) > 1) {
+                if (Mathf.Abs(r - guaranteedFree.Row) > 1 || Mathf.Abs(c - guaranteedFree.Col) > 1) {
                     availableCells.Add((r, c));
                 }
             }

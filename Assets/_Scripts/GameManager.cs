@@ -16,12 +16,12 @@ public class GameManager : MonoBehaviour {
     public bool GameStarted = false;
 
     void Start() {
-        UIManager.InitializeGridUI(GridRows, GridCols);
-        InitializeGrid(GridRows, GridCols);
         NewGame();
     }
 
-    private void NewGame() {
+    public void NewGame() {
+        UIManager.InitializeGridUI(GridRows, GridCols);
+        InitializeGrid(GridRows, GridCols);
         Grid.InitializeFields();
         UpdateMineCount();
         GameStarted = false;
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour {
 
         while (queue.Count > 0) {
             Cell currentCell = queue.Dequeue();
-            if (currentCell.IsRevealed) continue;
+            if (currentCell.IsRevealed || currentCell.IsFlagged) continue;
 
             currentCell.IsRevealed = true;
             UIManager.RevealEmptyCell(currentCell.Row, currentCell.Col, currentCell.NeighbouringMines);

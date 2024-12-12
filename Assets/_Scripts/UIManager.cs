@@ -9,13 +9,31 @@ public class UIManager : MonoBehaviour {
     public GameManager gameManager;
 
     private Button[,] cells;
+    private Button newGameButton;
     private Label mineCounter;
 
-    public void InitializeGridUI(int rows, int cols) {
+    public void Awake() {
         root = GetComponent<UIDocument>().rootVisualElement;
         gridContainer = root.Q<GroupBox>("Grid");
         mineCounter = root.Q<Label>("MineCounter");
+        newGameButton = root.Q<Button>("NewGameButton");
 
+        if (newGameButton == null) print("new game button is null");
+        print(newGameButton);
+    }
+
+    public void OnEnable() {
+        newGameButton.RegisterCallback<ClickEvent>(evt => {
+            print("New game clicked");
+            if (evt.button == 0) {
+                gameManager.NewGame();
+            }
+        });
+    }
+
+    public void InitializeGridUI(int rows, int cols) {
+
+        gridContainer.Clear();
         cells = new Button[rows, cols];
 
         for (int row = 0; row < rows; row++) {
@@ -83,4 +101,5 @@ public class UIManager : MonoBehaviour {
 
         mineCounter.text = count.ToString();
     }
+
 }
