@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ce1cd02c8325be4187b1c933b846bab, type: 3}
+  m_Name: DarkSprites
+  m_EditorClassIdentifier: 
+  notRevealed: {fileID: 1518774126, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  revealed:
+  - {fileID: -4852799242140713802, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: 814770391, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: 1731730950, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: -1889976727, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: -1175765047, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: -1424626312, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: 123628741, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: 1700565961, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: -881273573, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  mineClicked: {fileID: -565719500, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  mineUnclicked: {fileID: -699194922, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  Flag: {fileID: 278121756, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  QuestionMark: {fileID: 73872331, guid: 01b58d3683e277f468b065406e11f001, type: 3}

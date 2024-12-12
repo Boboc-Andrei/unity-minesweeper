@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour {
     private Button newGameButton;
     private Label mineCounter;
 
+    public TileSprites sprites;
+
     public void Awake() {
         root = GetComponent<UIDocument>().rootVisualElement;
         gridContainer = root.Q<GroupBox>("Grid");
@@ -44,6 +46,7 @@ public class UIManager : MonoBehaviour {
             for (int col = 0; col < cols; col++) {
                 Button button = new Button();
                 button.AddToClassList("cell");
+                button.style.backgroundImage = new StyleBackground(sprites.notRevealed);
                 rowContainer.Add(button);
                 cells[row, col] = button;
 
@@ -74,26 +77,22 @@ public class UIManager : MonoBehaviour {
 
     public void RevealEmptyCell(int row, int col, int neighbouringMines) {
         Button cell = cells[row, col];
-        cell.AddToClassList("cell-empty");
-
-        if (neighbouringMines > 0) {
-            cell.text = neighbouringMines.ToString();
-        }
+        cell.style.backgroundImage = new StyleBackground(sprites.revealed[neighbouringMines]);
     }
 
     internal void RevealMineCell(int row, int col) {
         Button cell = cells[row, col];
-        cell.AddToClassList("cell-mine");
+        cell.style.backgroundImage = new StyleBackground(sprites.mineClicked);
     }
 
     internal void FlagCell(int row, int col) {
         Button cell = cells[row, col];
-        cell.AddToClassList("cell-flagged");
+        cell.style.backgroundImage = new StyleBackground(sprites.Flag);
     }
 
     internal void UnflagCell(int row, int col) {
         Button cell = cells[row, col];
-        cell.RemoveFromClassList("cell-flagged");
+        cell.style.backgroundImage = new StyleBackground(sprites.notRevealed);
     }
 
     internal void UpdateMineCounter(int count) {

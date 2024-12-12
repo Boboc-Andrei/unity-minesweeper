@@ -5,7 +5,296 @@
             <engine:Label text="0" name="MineCounter" class="mines-counter" />
             <engine:Button text="New Game" name="NewGameButton" class="new-game-btn" />
         </engine:VisualElement>
-        <engine:GroupBox name="Grid" class="grid" />
+        <engine:GroupBox name="Grid" class="grid">
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+            <engine:VisualElement class="row" style="flex-grow: 1;">
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+            </engine:VisualElement>
+        </engine:GroupBox>
         <engine:VisualElement name="Footer" class="footer" />
     </engine:VisualElement>
 </engine:UXML>
