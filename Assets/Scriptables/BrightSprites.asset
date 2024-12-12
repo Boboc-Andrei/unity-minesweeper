@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ce1cd02c8325be4187b1c933b846bab, type: 3}
   m_Name: BrightSprites
   m_EditorClassIdentifier: 
-  notRevealed: {fileID: 1426142748, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
+  notRevealed: {fileID: 1247642753, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
   revealed:
-  - {fileID: -351016903841681267, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: -2035458305, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: -1994834449, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: 1918328576, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: -611189391, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: 602865130, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: 1232480368, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: 1989135877, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  - {fileID: -1945034773, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  mineClicked: {fileID: 1101218721, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  mineUnclicked: {fileID: 813221839, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  Flag: {fileID: -383925671, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
-  QuestionMark: {fileID: 1982228309, guid: 605758eefd3b4ac46a518ecaf0fb613c, type: 3}
+  - {fileID: -351016903841681267, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: -1336305306, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: 1334843582, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: -1209962505, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: 1802374476, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: -1904459644, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: -778234092, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: -437476676, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  - {fileID: 1100176091, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  mineClicked: {fileID: -375514235, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  mineUnclicked: {fileID: -29254966, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  Flag: {fileID: -1818522797, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}
+  QuestionMark: {fileID: -766772760, guid: 51ff967bf5adb55409380c5025ff6cca, type: 3}

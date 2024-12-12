@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ce1cd02c8325be4187b1c933b846bab, type: 3}
   m_Name: DarkSprites
   m_EditorClassIdentifier: 
-  notRevealed: {fileID: 1518774126, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  notRevealed: {fileID: 1576892891, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
   revealed:
-  - {fileID: -4852799242140713802, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: 814770391, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: 1731730950, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: -1889976727, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: -1175765047, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: -1424626312, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: 123628741, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: 1700565961, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  - {fileID: -881273573, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  mineClicked: {fileID: -565719500, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  mineUnclicked: {fileID: -699194922, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  Flag: {fileID: 278121756, guid: 01b58d3683e277f468b065406e11f001, type: 3}
-  QuestionMark: {fileID: 73872331, guid: 01b58d3683e277f468b065406e11f001, type: 3}
+  - {fileID: 162279448, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: -1796183571, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: 400637936, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: 434905086, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: 1094089282, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: 1835090087, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: 2129836043, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: -723455433, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  - {fileID: 679315230, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  mineClicked: {fileID: 238885117, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  mineUnclicked: {fileID: 124513251, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  Flag: {fileID: -1648656262, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
+  QuestionMark: {fileID: -770737439, guid: d30bd21e18731fd4b913d4c896880271, type: 3}
