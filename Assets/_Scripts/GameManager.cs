@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum Difficulty {
     Easy, Medium, Hard, Extreme
@@ -16,7 +17,7 @@ public class GameManager : MonoBehaviour {
     public DifficultySettings defaultHard;
     public DifficultySettings defaultExtreme;
 
-    public Difficulty currentDifficulty;
+    public Difficulty currentDifficulty = Difficulty.Extreme;
 
     public Dictionary<Difficulty, DifficultySettings> defaultDifficulties;
 
@@ -37,6 +38,12 @@ public class GameManager : MonoBehaviour {
             { Difficulty.Hard, defaultHard },
             { Difficulty.Extreme, defaultExtreme},
         };
+
+        UIManager.difficultyDropDown.RegisterCallback<ChangeEvent<Enum>>((evt) => {
+            currentDifficulty = (Difficulty)evt.newValue;
+            print(evt.newValue);
+        });
+
         NewGame();
     }
 

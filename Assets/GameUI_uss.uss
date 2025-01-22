@@ -21,7 +21,7 @@
     border-right-width: 0;
     border-bottom-width: 0;
     border-left-width: 0;
-    background-image: none;
+    background-image: url("project://database/Assets/Sprites/minesweeper_tiles_bright.png?fileID=1247642753&guid=51ff967bf5adb55409380c5025ff6cca&type=3#minesweeper_tiles_bright_11");
     min-width: 30px;
     min-height: 30px;
     flex-shrink: 1;
@@ -47,7 +47,7 @@
 
 .footer {
     background-color: rgb(108, 108, 108);
-    flex-grow: 1;
+    flex-grow: 0;
     max-height: 25px;
     height: 25px;
     min-height: 25px;

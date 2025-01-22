@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316acaf3520a0594cabcbd1075702672, type: 3}
   m_Name: Hard
   m_EditorClassIdentifier: 
-  Rows: 30
-  Cols: 16
+  Rows: 16
+  Cols: 30
   Mines: 99

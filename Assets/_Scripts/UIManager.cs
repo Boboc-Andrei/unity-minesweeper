@@ -5,12 +5,15 @@ using UnityEngine.UIElements;
 public class UIManager : MonoBehaviour {
 
     public VisualElement root;
-    private VisualElement gridContainer;
     public GameManager gameManager;
 
-    private Button[,] cells;
     private Button newGameButton;
     private Label mineCounter;
+    public EnumField difficultyDropDown;
+
+    private VisualElement gridContainer;
+    private Button[,] cells;
+
 
     public TileSprites sprites;
 
@@ -19,6 +22,9 @@ public class UIManager : MonoBehaviour {
         gridContainer = root.Q<GroupBox>("Grid");
         mineCounter = root.Q<Label>("MineCounter");
         newGameButton = root.Q<Button>("NewGameButton");
+        difficultyDropDown = root.Q<EnumField>("DifficultyDropdown");
+
+        difficultyDropDown.Init(Difficulty.Hard);
     }
 
     public void OnEnable() {
