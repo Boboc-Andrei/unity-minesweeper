@@ -3,26 +3,46 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
-    public int GridRows;
-    public int GridCols;
+public enum Difficulty {
+    Easy, Medium, Hard, Extreme
+}
 
-    public int Mines;
+public class GameManager : MonoBehaviour {
+
+    public DifficultySettings currentDifficultySettings => defaultDifficulties[currentDifficulty];
+
+    public DifficultySettings defaultEasy;
+    public DifficultySettings defaultMedium;
+    public DifficultySettings defaultHard;
+    public DifficultySettings defaultExtreme;
+
+    public Difficulty currentDifficulty;
+
+    public Dictionary<Difficulty, DifficultySettings> defaultDifficulties;
+
+    public int GridRows => currentDifficultySettings.Rows;
+    public int GridCols => currentDifficultySettings.Cols;
+    public int Mines => currentDifficultySettings.Mines;
 
     public MinesweeperGrid Grid;
     public GridGenerator GridGenerator;
     public UIManager UIManager;
 
-    public bool GameStarted = false;
+    private bool GameStarted = false;
 
     void Start() {
+        defaultDifficulties = new() {
+            { Difficulty.Easy, defaultEasy },
+            { Difficulty.Medium, defaultMedium },
+            { Difficulty.Hard, defaultHard },
+            { Difficulty.Extreme, defaultExtreme},
+        };
         NewGame();
     }
 
     public void NewGame() {
         UIManager.InitializeGridUI(GridRows, GridCols);
         InitializeGrid(GridRows, GridCols);
-        Grid.InitializeFields();
         UpdateMineCount();
         GameStarted = false;
     }
@@ -30,6 +50,7 @@ public class GameManager : MonoBehaviour {
     private void InitializeGrid(int GridRows, int GridCols) {
         GridGenerator = new GridGenerator(Mines);
         Grid = new MinesweeperGrid(GridRows, GridCols, GridGenerator);
+        Grid.InitializeFields();
     }
 
     public void OnCellClicked(int row, int col) {
@@ -51,10 +72,8 @@ public class GameManager : MonoBehaviour {
         if (cell.IsRevealed) {
             TryRevealNeighbours(cell);
         }
-        else {
-            if (!cell.IsFlagged) {
-                RevealCell(cell);
-            }
+        else if (!cell.IsFlagged) {
+            RevealCell(cell);
         }
     }
 
@@ -115,8 +134,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void TryRevealNeighbours(Cell cell) {
-        if (cell.NeighbouringFlags != cell.NeighbouringMines) return;
-        if (cell.IsMine) return;
+        if (cell.NeighbouringFlags != cell.NeighbouringMines || cell.IsMine) return;
 
         foreach (Cell neighbour in Grid.GetCellNeighbours(cell)) {
             if (!neighbour.IsRevealed && !neighbour.IsFlagged) {

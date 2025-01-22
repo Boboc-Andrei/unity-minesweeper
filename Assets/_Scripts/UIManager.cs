@@ -19,14 +19,10 @@ public class UIManager : MonoBehaviour {
         gridContainer = root.Q<GroupBox>("Grid");
         mineCounter = root.Q<Label>("MineCounter");
         newGameButton = root.Q<Button>("NewGameButton");
-
-        if (newGameButton == null) print("new game button is null");
-        print(newGameButton);
     }
 
     public void OnEnable() {
         newGameButton.RegisterCallback<ClickEvent>(evt => {
-            print("New game clicked");
             if (evt.button == 0) {
                 gameManager.NewGame();
             }
@@ -94,10 +90,9 @@ public class UIManager : MonoBehaviour {
         Button cell = cells[row, col];
         cell.style.backgroundImage = new StyleBackground(sprites.notRevealed);
     }
-
+    
     internal void UpdateMineCounter(int count) {
         if (mineCounter == null) print("mine counter is null");
-
         mineCounter.text = count.ToString();
     }
 

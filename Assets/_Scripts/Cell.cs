@@ -16,7 +16,7 @@ public class Cell {
     public int NeighbouringMines;
     public int NeighbouringFlags;
 
-    public Cell(int row, int col, bool isMine) {
+    public Cell(int row, int col, bool isMine = false) {
         Row = row;
         Col = col;
         IsMine = isMine;

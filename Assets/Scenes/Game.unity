@@ -448,11 +448,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b27fbed0cadf35040a2092cbe7af05c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridRows: 16
-  GridCols: 16
-  Mines: 60
+  defaultEasy: {fileID: 11400000, guid: 2e76c80656d619a459daa8785544a30c, type: 2}
+  defaultMedium: {fileID: 11400000, guid: ffb07a0a89e894544a62d50e8b0e91d1, type: 2}
+  defaultHard: {fileID: 11400000, guid: 8044d8a4895d4fc45af79704f6576317, type: 2}
+  defaultExtreme: {fileID: 11400000, guid: 0f6f1413c8017d54ba64c81f9767c2c7, type: 2}
+  currentDifficulty: 0
   UIManager: {fileID: 2126225831}
-  GameStarted: 0
 --- !u!4 &1556813274
 Transform:
   m_ObjectHideFlags: 0
