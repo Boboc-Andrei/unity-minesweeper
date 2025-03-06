@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,10 +13,19 @@ public class GameManager : MonoBehaviour {
 
     public DifficultySettings currentDifficultySettings => defaultDifficulties[currentDifficulty];
 
+    [SerializeField]
     public DifficultySettings defaultEasy;
+    [SerializeField]
     public DifficultySettings defaultMedium;
+    [SerializeField]
     public DifficultySettings defaultHard;
+    [SerializeField]
     public DifficultySettings defaultExtreme;
+    [SerializeField]
+    enum SolveSpeed { Slow, Fast, Instant};
+    [SerializeField]
+    private SolveSpeed solveSpeed;
+
 
     public Difficulty currentDifficulty = Difficulty.Extreme;
 
@@ -24,10 +34,12 @@ public class GameManager : MonoBehaviour {
     public int GridRows => currentDifficultySettings.Rows;
     public int GridCols => currentDifficultySettings.Cols;
     public int Mines => currentDifficultySettings.Mines;
+    private bool StartNewGameOnDifficultyChange = true;
 
     public MinesweeperGrid Grid;
     public GridGenerator GridGenerator;
     public UIManager UIManager;
+    public MinesweeperSolver Solver;
 
     private bool GameStarted = false;
 
@@ -41,7 +53,9 @@ public class GameManager : MonoBehaviour {
 
         UIManager.difficultyDropDown.RegisterCallback<ChangeEvent<Enum>>((evt) => {
             currentDifficulty = (Difficulty)evt.newValue;
-            print(evt.newValue);
+            if(StartNewGameOnDifficultyChange) {
+                NewGame();
+            }
         });
 
         NewGame();
@@ -49,56 +63,61 @@ public class GameManager : MonoBehaviour {
 
     public void NewGame() {
         UIManager.InitializeGridUI(GridRows, GridCols);
-        InitializeGrid(GridRows, GridCols);
-        UpdateMineCount();
-        GameStarted = false;
-    }
 
-    private void InitializeGrid(int GridRows, int GridCols) {
         GridGenerator = new GridGenerator(Mines);
         Grid = new MinesweeperGrid(GridRows, GridCols, GridGenerator);
-        Grid.InitializeFields();
+        Grid.InitializeCells();
+
+        UpdateMineCount();
+        Solver = new MinesweeperSolver(Grid);
+        GameStarted = false;
     }
 
     public void OnCellClicked(int row, int col) {
 
         Cell cell = Grid.Fields[row, col];
+        bool firstClick = false;
 
         if (!GameStarted) {
             GameStarted = true;
+            firstClick = true;
             Grid.PlaceMines(guaranteedFree: cell);
         }
 
-        if (UIManager == null) {
-            Debug.LogError("UIManager is NULL");
-        }
-        if (cell == null) {
-            Debug.LogError("Cell is NULL");
-        }
+        if (UIManager == null) { Debug.LogError("UIManager is NULL"); }
+        if (cell == null) { Debug.LogError("Cell is NULL"); }
 
         if (cell.IsRevealed) {
-            TryRevealNeighbours(cell);
+            RevealNeighbours(cell);
         }
         else if (!cell.IsFlagged) {
             RevealCell(cell);
+        }
+
+        if(firstClick) {
+            Solver.GenerateHints();
         }
     }
 
     internal void OnCellRightClicked(int row, int col) {
         Cell cell = Grid.Fields[row, col];
         if (!cell.IsRevealed) {
-            ToggleCellFlag(cell);
+            ToggleFlag(cell);
+            Solver.OnUserToggledFlag(cell);
         }
     }
 
     public void RevealCell(Cell cell) {
         if (cell.IsMine) {
-            cell.IsRevealed = true;
+            Grid.RevealCell(cell);
             UIManager.RevealMineCell(cell.Row, cell.Col);
             GameOver();
         }
         else {
             CascadeReveal(cell);
+            if(Grid.AllEmptyCellsRevealed) {
+                GameWon();
+            }
         }
     }
 
@@ -110,7 +129,7 @@ public class GameManager : MonoBehaviour {
             Cell currentCell = queue.Dequeue();
             if (currentCell.IsRevealed || currentCell.IsFlagged) continue;
 
-            currentCell.IsRevealed = true;
+            Grid.RevealCell(currentCell);
             UIManager.RevealEmptyCell(currentCell.Row, currentCell.Col, currentCell.NeighbouringMines);
 
             if (currentCell.NeighbouringMines == 0) {
@@ -125,22 +144,21 @@ public class GameManager : MonoBehaviour {
         print("Game over sequence to be implemented");
     }
 
-    private void ToggleCellFlag(Cell cell) {
-
-        if (cell.IsFlagged) {
-            Grid.FlaggedCells--;
-            Grid.ToggleFlag(cell, false);
-            UIManager.UnflagCell(cell.Row, cell.Col);
-        }
-        else {
-            Grid.FlaggedCells++;
-            Grid.ToggleFlag(cell, true);
-            UIManager.FlagCell(cell.Row, cell.Col);
-        }
-        UIManager.UpdateMineCounter(Grid.TotalMines - Grid.FlaggedCells);
+    public void GameWon() {
+        print("Game won sequence to be implemented");
     }
 
-    private void TryRevealNeighbours(Cell cell) {
+    private void SetFlag(Cell cell, bool isFlag) {
+        if (isFlag == cell.IsFlagged) return;
+        Grid.SetFlag(cell, isFlag);
+        UIManager.SetFlag(cell.Row, cell.Col, isFlag);
+        UIManager.UpdateMineCounter(Grid.TotalMines - Grid.FlaggedCells);
+    }
+    private void ToggleFlag(Cell cell) {
+        SetFlag(cell, !cell.IsFlagged);
+    }
+
+    private void RevealNeighbours(Cell cell) {
         if (cell.NeighbouringFlags != cell.NeighbouringMines || cell.IsMine) return;
 
         foreach (Cell neighbour in Grid.GetCellNeighbours(cell)) {
@@ -151,5 +169,84 @@ public class GameManager : MonoBehaviour {
     }
     private void UpdateMineCount() {
         UIManager.UpdateMineCounter(Grid.TotalMines - Grid.FlaggedCells);
+    }
+
+    internal bool ShowHint() {
+        MoveHint hint = Solver.PeekHint();
+        if(hint == null) {
+            Debug.Log("Unable to provide hint");
+            return false;
+        }
+
+        List<Cell> cellsToHighlight = new List<Cell>();
+        switch (hint.Type) {
+            case HintType.FlagsSatisfied:
+                cellsToHighlight = Grid.GetUnrevealedNeighbours(hint.AffectedCell, true);
+                cellsToHighlight.Add(hint.AffectedCell);
+                UIManager.HighlightCells(cellsToHighlight);
+                break;
+            case HintType.FlagCell:
+                cellsToHighlight.Add(hint.AffectedCell);
+                UIManager.HighlightCells(cellsToHighlight);
+                break;
+            case HintType.WrongFlag:
+                cellsToHighlight.Add(hint.AffectedCell);
+                UIManager.HighlightCells(cellsToHighlight);
+                Debug.Log($"Cell ({hint.AffectedCell.Row}, {hint.AffectedCell.Col}) has wrong flag");
+                break;
+        }
+        return true;
+    }
+
+    internal bool PerformHint() {
+        MoveHint hint = Solver.DequeueHint();
+        if(hint == null) {
+            Debug.Log("No valid move possible");
+            return false;
+        }
+
+        List<Cell> cellsToHighlight = new List<Cell>();
+        switch (hint.Type) {
+            case HintType.FlagsSatisfied:
+                RevealNeighbours(hint.AffectedCell);
+                break;
+            case HintType.FlagCell:
+                SetFlag(hint.AffectedCell, true);
+                break;
+            case HintType.WrongFlag:
+                cellsToHighlight.Add(hint.AffectedCell);
+                SetFlag(hint.AffectedCell, false);
+                break;
+        }
+        return true;
+    }
+
+    public void SolveGrid() {
+        switch(solveSpeed) {
+            case SolveSpeed.Instant:
+                SolveGridInstant();
+                break;
+            case SolveSpeed.Fast:
+                StartCoroutine(SolveGridDelayed(0f));
+                break;
+            case SolveSpeed.Slow:
+                StartCoroutine(SolveGridDelayed(.2f));
+                break;
+        }
+    }
+
+    public IEnumerator SolveGridDelayed(float delay) {
+        bool hasSolvableMoves = true;
+        while (hasSolvableMoves) {
+            hasSolvableMoves = PerformHint();
+            yield return new WaitForSeconds(delay);
+        }
+    }
+
+    public void SolveGridInstant() {
+        bool hasSolvableMoves = true;
+        while (hasSolvableMoves) {
+            hasSolvableMoves = PerformHint();
+        }
     }
 }

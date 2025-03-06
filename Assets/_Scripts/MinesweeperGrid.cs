@@ -6,6 +6,10 @@ using UnityEngine;
 public class MinesweeperGrid {
     public Cell[,] Fields;
     public int TotalMines => Generator.TotalMines;
+
+    public bool AllEmptyCellsRevealed => Rows * Columns - TotalMines - RevealedCells == 0;
+
+    public int RevealedCells = 0;
     public int FlaggedCells = 0;
 
     public int Rows;
@@ -24,7 +28,7 @@ public class MinesweeperGrid {
         Fields = new Cell[Rows, Columns];
     }
 
-    public void InitializeFields() {
+    public void InitializeCells() {
         for (int row = 0; row < Rows; row++) {
             for (int col = 0; col < Columns; col++) {
                 Cell newCell = new Cell(row, col);
@@ -62,7 +66,23 @@ public class MinesweeperGrid {
             if (MinesOnly && !Fields[neighbourRow, neighbourCol].IsMine) continue;
 
             neighbours.Add(Fields[neighbourRow, neighbourCol]);
+        }
 
+        return neighbours;
+    }
+
+    public List<Cell> GetUnrevealedNeighbours(Cell cell, bool includeFlagged = false) {
+        List<Cell> neighbours = new List<Cell>();
+
+        foreach (var position in neighbourRelativePositions) {
+            var (rowDelta, colDelta) = position;
+            int neighbourRow = cell.Row + rowDelta;
+            int neighbourCol = cell.Col + colDelta;
+
+            if (!IsValidPosition(neighbourRow, neighbourCol)) continue;
+            if (Fields[neighbourRow, neighbourCol].IsRevealed || (Fields[neighbourRow, neighbourCol].IsFlagged && !includeFlagged)) continue;
+
+            neighbours.Add(Fields[neighbourRow, neighbourCol]);
         }
 
         return neighbours;
@@ -72,11 +92,18 @@ public class MinesweeperGrid {
         return (row >= 0 && row < Rows && col >= 0 && col < Columns);
     }
 
-    internal void ToggleFlag(Cell cell, bool isFlagged) {
+    public void SetFlag(Cell cell, bool isFlagged) {
+        if (isFlagged == cell.IsFlagged) return;
         cell.IsFlagged = isFlagged;
 
+        FlaggedCells += isFlagged ? 1 : -1;
         foreach (Cell neighbour in GetCellNeighbours(cell)) {
             neighbour.NeighbouringFlags += isFlagged ? 1 : -1;
         }
+    }
+
+    public void RevealCell(Cell cell) {
+        if (!cell.IsRevealed) RevealedCells++;
+        cell.IsRevealed = true;
     }
 }

@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,6 +11,10 @@ public class UIManager : MonoBehaviour {
     public GameManager gameManager;
 
     private Button newGameButton;
+    private Label hintLabel;
+    private Button hintButton;
+    private Button doHintButton;
+    private Button solveButton;
     private Label mineCounter;
     public EnumField difficultyDropDown;
 
@@ -22,6 +29,10 @@ public class UIManager : MonoBehaviour {
         gridContainer = root.Q<GroupBox>("Grid");
         mineCounter = root.Q<Label>("MineCounter");
         newGameButton = root.Q<Button>("NewGameButton");
+        hintLabel = root.Q<Label>("HintLabel");
+        hintButton = root.Q<Button>("HintButton");
+        doHintButton = root.Q<Button>("DoHintButton");
+        solveButton = root.Q<Button>("SolveButton");
         difficultyDropDown = root.Q<EnumField>("DifficultyDropdown");
 
         difficultyDropDown.Init(Difficulty.Hard);
@@ -31,6 +42,24 @@ public class UIManager : MonoBehaviour {
         newGameButton.RegisterCallback<ClickEvent>(evt => {
             if (evt.button == 0) {
                 gameManager.NewGame();
+            }
+        });
+
+        hintButton.RegisterCallback<ClickEvent>(evt => {
+            if (evt.button == 0) {
+                gameManager.ShowHint();
+            }
+        });
+
+        doHintButton.RegisterCallback<ClickEvent>(evt => {
+            if (evt.button == 0) {
+                gameManager.PerformHint();
+            }
+        });
+
+        solveButton.RegisterCallback<ClickEvent>(evt => {
+            if (evt.button == 0) {
+                gameManager.SolveGrid();
             }
         });
     }
@@ -87,19 +116,25 @@ public class UIManager : MonoBehaviour {
         cell.style.backgroundImage = new StyleBackground(sprites.mineClicked);
     }
 
-    internal void FlagCell(int row, int col) {
+    internal void SetFlag(int row, int col, bool isFlag) {
         Button cell = cells[row, col];
-        cell.style.backgroundImage = new StyleBackground(sprites.Flag);
+        cell.style.backgroundImage = isFlag ? new StyleBackground(sprites.Flag) : new StyleBackground(sprites.notRevealed);
     }
 
-    internal void UnflagCell(int row, int col) {
-        Button cell = cells[row, col];
-        cell.style.backgroundImage = new StyleBackground(sprites.notRevealed);
-    }
-    
     internal void UpdateMineCounter(int count) {
         if (mineCounter == null) print("mine counter is null");
         mineCounter.text = count.ToString();
     }
 
+    public void HighlightCells(List<Cell> cellsToHighlight) {
+        foreach(var cell in cellsToHighlight) {
+            StartCoroutine(HighlightCellForSeconds(cells[cell.Row, cell.Col], 1));
+        }
+    }
+
+    public IEnumerator HighlightCellForSeconds(Button cell, float time) {
+        cell.AddToClassList("highlighted");
+        yield return new WaitForSeconds(time);
+        cell.RemoveFromClassList("highlighted");
+    }
 }

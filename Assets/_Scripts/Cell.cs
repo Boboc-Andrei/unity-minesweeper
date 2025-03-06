@@ -15,6 +15,7 @@ public class Cell {
 
     public int NeighbouringMines;
     public int NeighbouringFlags;
+    public bool HasAllMinesFlagged => IsRevealed && !IsMine && NeighbouringMines != 0 && NeighbouringFlags == NeighbouringMines;
 
     public Cell(int row, int col, bool isMine = false) {
         Row = row;

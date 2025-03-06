@@ -1,10 +1,17 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/GameUI_uss.uss?fileID=7433441132597879392&amp;guid=5db71d3136f81bd47be6f64f0734edb5&amp;type=3#GameUI_uss" />
     <engine:VisualElement name="Background" class="background" style="flex-grow: 1; background-color: rgb(155, 155, 155); align-items: stretch; justify-content: space-between;">
-        <engine:VisualElement name="Header" class="header" style="flex-direction: row;">
+        <engine:VisualElement name="Header" class="header" style="flex-direction: row; justify-content: center;">
             <engine:Label text="0" name="MineCounter" class="mines-counter" />
             <engine:EnumField label="Difficulty" value="Center" type="UnityEngine.TextAlignment, UnityEngine.TextRenderingModule" name="DifficultyDropdown" />
+            <engine:Button text="Settings" name="SettingsButton" />
+            <engine:Button text="Hint" name="HintButton" />
+            <engine:Button text="Step" name="DoHintButton" />
+            <engine:Button text="Solve" name="SolveButton" />
             <engine:Button text="New Game" name="NewGameButton" class="new-game-btn" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Banner" style="flex-grow: 0; background-color: rgb(108, 108, 108);">
+            <engine:Label name="HintLabel" style="-unity-text-align: upper-center; min-height: 50px; background-color: rgba(108, 108, 108, 0);" />
         </engine:VisualElement>
         <engine:GroupBox name="Grid" class="grid" style="flex-shrink: 0;">
             <engine:VisualElement name="VisualElement" class="row" style="flex-grow: 1;">
@@ -148,7 +155,7 @@
                 <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
                 <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
                 <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
-                <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
+                <engine:Button class="cell highlighted" style="margin-right: 0; margin-left: 0;" />
                 <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
                 <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />
                 <engine:Button class="cell" style="margin-right: 0; margin-left: 0;" />

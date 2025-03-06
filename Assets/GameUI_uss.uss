@@ -76,3 +76,26 @@
 
 .new-game-btn {
 }
+
+.menu-panel {
+    background-color: rgb(80, 80, 80);
+    width: 50%;
+    height: 75%;
+    flex-grow: 0;
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left-color: rgb(141, 141, 141);
+    border-right-color: rgb(141, 141, 141);
+    border-top-color: rgb(141, 141, 141);
+    border-bottom-color: rgb(141, 141, 141);
+}
+
+.highlighted {
+    -unity-background-image-tint-color: rgba(255, 243, 54, 0.88);
+}
