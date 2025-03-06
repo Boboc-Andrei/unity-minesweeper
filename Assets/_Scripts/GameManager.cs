@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,7 +12,7 @@ public enum Difficulty {
 
 public class GameManager : MonoBehaviour {
 
-    public DifficultySettings currentDifficultySettings => defaultDifficulties[currentDifficulty];
+    private DifficultySettings currentDifficultySettings => defaultDifficulties[CurrentDifficulty];
 
     [SerializeField]
     public DifficultySettings defaultEasy;
@@ -22,23 +23,32 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     public DifficultySettings defaultExtreme;
     [SerializeField]
-    enum SolveSpeed { Slow, Fast, Instant};
+    enum SolveSpeed { Slow, Fast, Instant };
     [SerializeField]
     private SolveSpeed solveSpeed;
 
-
-    public Difficulty currentDifficulty = Difficulty.Extreme;
+    [SerializeField]
+    private Difficulty _currentDifficulty = Difficulty.Medium;
+    public Difficulty CurrentDifficulty {
+        get {
+            return _currentDifficulty;
+        }
+        set {
+            _currentDifficulty = value;
+            GameEvents.DifficultyChanged(value);
+        }
+    }
 
     public Dictionary<Difficulty, DifficultySettings> defaultDifficulties;
 
     public int GridRows => currentDifficultySettings.Rows;
     public int GridCols => currentDifficultySettings.Cols;
     public int Mines => currentDifficultySettings.Mines;
+    [SerializeField]
     private bool StartNewGameOnDifficultyChange = true;
 
     public MinesweeperGrid Grid;
     public GridGenerator GridGenerator;
-    public UIManager UIManager;
     public MinesweeperSolver Solver;
 
     private bool GameStarted = false;
@@ -51,26 +61,37 @@ public class GameManager : MonoBehaviour {
             { Difficulty.Extreme, defaultExtreme},
         };
 
-        UIManager.difficultyDropDown.RegisterCallback<ChangeEvent<Enum>>((evt) => {
-            currentDifficulty = (Difficulty)evt.newValue;
-            if(StartNewGameOnDifficultyChange) {
-                NewGame();
-            }
-        });
-
         NewGame();
     }
 
+    public void OnEnable() {
+        GameEvents.OnCellClicked += OnCellClicked;
+        GameEvents.OnCellRightClicked += OnCellRightClicked;
+        GameEvents.OnDifficultyChanged += DifficultyChanged;
+        GameEvents.OnNewGame += NewGame;
+    }
+
+    public void OnDisable() {
+        
+    }
     public void NewGame() {
-        UIManager.InitializeGridUI(GridRows, GridCols);
 
         GridGenerator = new GridGenerator(Mines);
         Grid = new MinesweeperGrid(GridRows, GridCols, GridGenerator);
         Grid.InitializeCells();
+        GameEvents.GridInitialized(GridRows, GridCols);
+        GameEvents.FlagCounterUpdate(Grid.MinesLeft);
 
-        UpdateMineCount();
         Solver = new MinesweeperSolver(Grid);
         GameStarted = false;
+    }
+
+    public void DifficultyChanged(Difficulty newDifficulty) {
+        if (newDifficulty == CurrentDifficulty) return;
+        CurrentDifficulty = newDifficulty;
+        if(StartNewGameOnDifficultyChange) {
+            NewGame();
+        }
     }
 
     public void OnCellClicked(int row, int col) {
@@ -83,9 +104,6 @@ public class GameManager : MonoBehaviour {
             firstClick = true;
             Grid.PlaceMines(guaranteedFree: cell);
         }
-
-        if (UIManager == null) { Debug.LogError("UIManager is NULL"); }
-        if (cell == null) { Debug.LogError("Cell is NULL"); }
 
         if (cell.IsRevealed) {
             RevealNeighbours(cell);
@@ -104,13 +122,14 @@ public class GameManager : MonoBehaviour {
         if (!cell.IsRevealed) {
             ToggleFlag(cell);
             Solver.OnUserToggledFlag(cell);
+            GameEvents.FlagSet(cell.Row, cell.Col, cell.IsFlagged);
         }
     }
 
     public void RevealCell(Cell cell) {
         if (cell.IsMine) {
             Grid.RevealCell(cell);
-            UIManager.RevealMineCell(cell.Row, cell.Col);
+            GameEvents.MineCellRevealed(cell.Row, cell.Col);
             GameOver();
         }
         else {
@@ -130,7 +149,7 @@ public class GameManager : MonoBehaviour {
             if (currentCell.IsRevealed || currentCell.IsFlagged) continue;
 
             Grid.RevealCell(currentCell);
-            UIManager.RevealEmptyCell(currentCell.Row, currentCell.Col, currentCell.NeighbouringMines);
+            GameEvents.EmptyCellRevealed(currentCell.Row, currentCell.Col, currentCell.NeighbouringMines);
 
             if (currentCell.NeighbouringMines == 0) {
                 foreach (Cell neighbour in Grid.GetCellNeighbours(currentCell)) {
@@ -151,8 +170,8 @@ public class GameManager : MonoBehaviour {
     private void SetFlag(Cell cell, bool isFlag) {
         if (isFlag == cell.IsFlagged) return;
         Grid.SetFlag(cell, isFlag);
-        UIManager.SetFlag(cell.Row, cell.Col, isFlag);
-        UIManager.UpdateMineCounter(Grid.TotalMines - Grid.FlaggedCells);
+        GameEvents.FlagSet(cell.Row, cell.Col, isFlag);
+        GameEvents.FlagCounterUpdate(Grid.MinesLeft);
     }
     private void ToggleFlag(Cell cell) {
         SetFlag(cell, !cell.IsFlagged);
@@ -162,13 +181,9 @@ public class GameManager : MonoBehaviour {
         if (cell.NeighbouringFlags != cell.NeighbouringMines || cell.IsMine) return;
 
         foreach (Cell neighbour in Grid.GetCellNeighbours(cell)) {
-            if (!neighbour.IsRevealed && !neighbour.IsFlagged) {
-                RevealCell(neighbour);
-            }
+            if (neighbour.IsRevealed || neighbour.IsFlagged) continue;
+            RevealCell(neighbour);
         }
-    }
-    private void UpdateMineCount() {
-        UIManager.UpdateMineCounter(Grid.TotalMines - Grid.FlaggedCells);
     }
 
     internal bool ShowHint() {
@@ -183,18 +198,15 @@ public class GameManager : MonoBehaviour {
             case HintType.FlagsSatisfied:
                 cellsToHighlight = Grid.GetUnrevealedNeighbours(hint.AffectedCell, true);
                 cellsToHighlight.Add(hint.AffectedCell);
-                UIManager.HighlightCells(cellsToHighlight);
                 break;
             case HintType.FlagCell:
                 cellsToHighlight.Add(hint.AffectedCell);
-                UIManager.HighlightCells(cellsToHighlight);
                 break;
             case HintType.WrongFlag:
                 cellsToHighlight.Add(hint.AffectedCell);
-                UIManager.HighlightCells(cellsToHighlight);
-                Debug.Log($"Cell ({hint.AffectedCell.Row}, {hint.AffectedCell.Col}) has wrong flag");
                 break;
         }
+        GameEvents.CellsHighlighted(cellsToHighlight.Select(cell => (cell.Row, cell.Col)).ToList());
         return true;
     }
 

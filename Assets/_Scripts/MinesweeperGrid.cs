@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class MinesweeperGrid {
     public Cell[,] Fields;
     public int TotalMines => Generator.TotalMines;
-
     public bool AllEmptyCellsRevealed => Rows * Columns - TotalMines - RevealedCells == 0;
+    public int MinesLeft => TotalMines - FlaggedCells;
 
     public int RevealedCells = 0;
     public int FlaggedCells = 0;
@@ -87,6 +88,7 @@ public class MinesweeperGrid {
 
         return neighbours;
     }
+
 
     private bool IsValidPosition(int row, int col) {
         return (row >= 0 && row < Rows && col >= 0 && col < Columns);

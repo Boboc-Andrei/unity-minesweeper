@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
+using UnityEditor.SpeedTree.Importer;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -39,9 +40,15 @@ public class UIManager : MonoBehaviour {
     }
 
     public void OnEnable() {
+        GameEvents.OnGridInitialized += InitializeGridUI;
+        GameEvents.OnEmptyCellRevealed += RevealEmptyCell;
+        GameEvents.OnMineCellRevealed += RevealMineCell;
+        GameEvents.OnFlagSet += SetFlag;
+        GameEvents.OnCellsHighlighted += HighlightCells;
+
         newGameButton.RegisterCallback<ClickEvent>(evt => {
             if (evt.button == 0) {
-                gameManager.NewGame();
+                GameEvents.NewGame();
             }
         });
 
@@ -62,10 +69,13 @@ public class UIManager : MonoBehaviour {
                 gameManager.SolveGrid();
             }
         });
+
+        difficultyDropDown.RegisterCallback<ChangeEvent<Enum>>((evt) => {
+            GameEvents.DifficultyChanged((Difficulty)evt.newValue);
+        });
     }
 
     public void InitializeGridUI(int rows, int cols) {
-
         gridContainer.Clear();
         cells = new Button[rows, cols];
 
@@ -84,26 +94,16 @@ public class UIManager : MonoBehaviour {
                 int r = row;
                 int c = col;
 
-                button.clicked += () => OnCellClicked(r, c);
-
-                button.RegisterCallback<PointerDownEvent>(evt => {
+                button.RegisterCallback<PointerUpEvent>(evt => {
                     if (evt.button == 0) {
-                        OnCellClicked(r, c);
+                        GameEvents.CellClicked(r, c);
                     }
                     else if (evt.button == 1) {
-                        OnCellRightClicked(r, c);
+                        GameEvents.CellRightClicked(r, c);
                     }
                 });
             }
         }
-    }
-
-    private void OnCellRightClicked(int row, int col) {
-        gameManager.OnCellRightClicked(row, col);
-    }
-
-    public void OnCellClicked(int row, int col) {
-        gameManager.OnCellClicked(row, col);
     }
 
     public void RevealEmptyCell(int row, int col, int neighbouringMines) {
@@ -126,9 +126,9 @@ public class UIManager : MonoBehaviour {
         mineCounter.text = count.ToString();
     }
 
-    public void HighlightCells(List<Cell> cellsToHighlight) {
-        foreach(var cell in cellsToHighlight) {
-            StartCoroutine(HighlightCellForSeconds(cells[cell.Row, cell.Col], 1));
+    public void HighlightCells(List<(int, int)> cellsToHighlight) {
+        foreach(var (row, col) in cellsToHighlight) {
+            StartCoroutine(HighlightCellForSeconds(cells[row, col], 1));
         }
     }
 
