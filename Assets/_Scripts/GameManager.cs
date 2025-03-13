@@ -171,7 +171,6 @@ public class GameManager : MonoBehaviour {
         if (isFlag == cell.IsFlagged) return;
         Grid.SetFlag(cell, isFlag);
         GameEvents.FlagSet(cell.Row, cell.Col, isFlag);
-        GameEvents.FlagCounterUpdate(Grid.MinesLeft);
     }
     private void ToggleFlag(Cell cell) {
         SetFlag(cell, !cell.IsFlagged);

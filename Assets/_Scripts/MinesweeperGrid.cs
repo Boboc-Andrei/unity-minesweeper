@@ -99,6 +99,9 @@ public class MinesweeperGrid {
         cell.IsFlagged = isFlagged;
 
         FlaggedCells += isFlagged ? 1 : -1;
+        
+        GameEvents.FlagCounterUpdate(MinesLeft);
+        
         foreach (Cell neighbour in GetCellNeighbours(cell)) {
             neighbour.NeighbouringFlags += isFlagged ? 1 : -1;
         }

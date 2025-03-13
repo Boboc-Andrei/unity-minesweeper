@@ -45,6 +45,7 @@ public class UIManager : MonoBehaviour {
         GameEvents.OnMineCellRevealed += RevealMineCell;
         GameEvents.OnFlagSet += SetFlag;
         GameEvents.OnCellsHighlighted += HighlightCells;
+        GameEvents.OnFlagCounterUpdate += UpdateMineCounter;
 
         newGameButton.RegisterCallback<ClickEvent>(evt => {
             if (evt.button == 0) {
