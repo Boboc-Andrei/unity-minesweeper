@@ -55,6 +55,7 @@ public class MinesweeperGrid {
 
     }
 
+    #region Getting Neighbours
     public List<Cell> GetCellNeighbours(Cell cell, bool MinesOnly = false) {
         List<Cell> neighbours = new List<Cell>();
 
@@ -88,8 +89,9 @@ public class MinesweeperGrid {
 
         return neighbours;
     }
+    #endregion
 
-
+    #region Flags
     private bool IsValidPosition(int row, int col) {
         return (row >= 0 && row < Rows && col >= 0 && col < Columns);
     }
@@ -101,14 +103,59 @@ public class MinesweeperGrid {
         FlaggedCells += isFlagged ? 1 : -1;
         
         GameEvents.FlagCounterUpdate(MinesLeft);
-        
+        GameEvents.FlagSet(cell.Row, cell.Col, isFlagged);
+
         foreach (Cell neighbour in GetCellNeighbours(cell)) {
             neighbour.NeighbouringFlags += isFlagged ? 1 : -1;
         }
     }
 
-    public void RevealCell(Cell cell) {
-        if (!cell.IsRevealed) RevealedCells++;
-        cell.IsRevealed = true;
+    public void ToggleFlag(Cell cell) {
+        SetFlag(cell, !cell.IsFlagged);
     }
+
+    #endregion
+
+    #region Revealing Cells
+    
+    public void RevealCell(Cell cell) {
+        if (cell.IsRevealed) return;
+        RevealedCells++;
+        cell.IsRevealed = true;
+
+        if (cell.IsMine) {
+            GameEvents.MineCellRevealed(cell.Row, cell.Col);
+        }
+        else {
+            GameEvents.EmptyCellRevealed(cell.Row, cell.Col, cell.NeighbouringMines);
+            if (AllEmptyCellsRevealed) {
+                GameEvents.GameWon();
+            }
+        }
+    }
+
+    public void RevealCellCascading(Cell cell) {
+        Queue<Cell> queue = new Queue<Cell>();
+        queue.Enqueue(cell);
+
+        while (queue.Count > 0) {
+            Cell currentCell = queue.Dequeue();
+            if (currentCell.IsRevealed || currentCell.IsFlagged) continue;
+
+            RevealCell(currentCell);
+
+            if (currentCell.NeighbouringMines == 0) {
+                foreach (Cell neighbour in GetCellNeighbours(currentCell)) {
+                    queue.Enqueue(neighbour);
+                }
+            }
+        }
+    }
+
+    public void RevealNeighbours(Cell cell) {
+        foreach (Cell neighbour in GetCellNeighbours(cell)) {
+            RevealCellCascading(neighbour);
+        }
+    }
+    #endregion
 }

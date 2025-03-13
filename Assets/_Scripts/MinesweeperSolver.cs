@@ -1,34 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 
-public enum HintType {
-    FlagCell, FlagsSatisfied, WrongFlag
-}
-
-public class MoveHint {
-    public HintType Type { get; set; }
-    public Cell AffectedCell { get; set; }
-
-    public MoveHint(HintType type, Cell affectedCell) {
-        Type = type;
-        AffectedCell = affectedCell;
-    }
-
-    public override bool Equals(object? obj) {
-        if(obj is MoveHint other) {
-            return Type == other.Type && AffectedCell == other.AffectedCell;
-        }
-        return false;
-    }
-
-    public override int GetHashCode() {
-        return HashCode.Combine(Type, AffectedCell);
-    }
-}
 
 public class MinesweeperSolver {
     private MinesweeperGrid grid;
@@ -42,10 +17,10 @@ public class MinesweeperSolver {
         this.grid = grid;
     }
 
-    public MoveHint DequeueHint() {
+    public MoveHint GetHint(bool dequeue = true) {
         if(wrongFlagsHints.Count != 0) {
             MoveHint wrongFlagHint = wrongFlagsHints[0];
-            wrongFlagsHints.Remove(wrongFlagHint);
+            if(dequeue) wrongFlagsHints.Remove(wrongFlagHint);
             return wrongFlagHint;
         }
 
@@ -54,48 +29,14 @@ public class MinesweeperSolver {
         }
 
         while(hintQueue.Count != 0) {
-            MoveHint hint = hintQueue.Dequeue();
-
-            switch(hint.Type) {
-                case HintType.FlagCell:
-                    if(hint.AffectedCell.IsFlagged) {
-                        continue;
-                    }
-                    else {
-                        return hint;
-                    }
-                default:
-                    return hint;
-            }
-        }
-        return null;
-    }
-
-    public MoveHint PeekHint() {
-        if (wrongFlagsHints.Count != 0) {
-            MoveHint wrongFlagHint = wrongFlagsHints[0];
-            return wrongFlagHint;
-        }
-
-        if (hintQueue.Count == 0) {
-            GenerateHints();
-        }
-
-        bool foundValidHint = false;
-        while (!foundValidHint || hintQueue.Count != 0) {
             MoveHint hint = hintQueue.Peek();
 
-            switch (hint.Type) {
-                case HintType.FlagCell:
-                    if (hint.AffectedCell.IsFlagged) {
-                        hintQueue.Dequeue();
-                        continue;
-                    }
-                    else {
-                        return hint;
-                    }
-                default:
-                    return hint;
+            if (hint.IsObsolete()) {
+                hintQueue.Dequeue();
+            }
+            else {
+                if (dequeue) hintQueue.Dequeue();
+                return hint;
             }
         }
         return null;
@@ -113,13 +54,23 @@ public class MinesweeperSolver {
             for (int col = 0; col < grid.Columns; col++) {
                 Cell cell = grid.Fields[row, col];
                 if (cell.HasAllMinesFlagged && grid.GetUnrevealedNeighbours(cell).Count != 0) {
-                    MoveHint hint = new MoveHint(HintType.FlagsSatisfied, cell);
-                    if (hintSet.Contains(hint)) continue;
-                    hintQueue.Enqueue(hint);
-                    hintSet.Add(hint);
+                    MoveHint newHint = CreateFlagsSatisfiedHint(cell);
+                    if (hintSet.Contains(newHint)) continue;
+                    hintQueue.Enqueue(newHint);
+                    hintSet.Add(newHint);
                 }
             }
         }
+    }
+
+    private MoveHint CreateFlagsSatisfiedHint(Cell affectedCell) {
+        return new FlagsSatisfiedHint(affectedCell, grid);
+    }
+    private MoveHint CreateFlagCellHint(Cell affectedCell) {
+        return new FlagCellHint(affectedCell, grid);
+    }
+    private MoveHint CreateWrongFlagHint(Cell affectedCell) {
+        return new WrongFlagHint(affectedCell, grid);
     }
 
     private void ScanForFlaggableCells() {
@@ -136,11 +87,11 @@ public class MinesweeperSolver {
                 }
 
                 foreach(var neighbour in unrevealedNeighbours) {
-                    MoveHint hint = new MoveHint(HintType.FlagCell, neighbour);
+                    MoveHint newHint = CreateFlagCellHint(neighbour);
                     if (!flaggableCells.Contains(neighbour)) flaggableCells.Add(neighbour);
-                    if (hintSet.Contains(hint)) continue;
-                    hintQueue.Enqueue(hint);
-                    hintSet.Add(hint);
+                    if (hintSet.Contains(newHint)) continue;
+                    hintQueue.Enqueue(newHint);
+                    hintSet.Add(newHint);
                 }
             }
         }
@@ -149,15 +100,13 @@ public class MinesweeperSolver {
     public void OnUserToggledFlag(Cell cell) {
         if(cell.IsFlagged) {
             if (flaggableCells.Contains(cell)) return;
-            wrongFlagsHints.Add(new MoveHint(HintType.WrongFlag, cell));
+            wrongFlagsHints.Add(CreateWrongFlagHint(cell));
         }
         else {
-            MoveHint possibleWrongFlag = new MoveHint(HintType.WrongFlag, cell);
+            MoveHint possibleWrongFlag = CreateWrongFlagHint(cell);
             if (wrongFlagsHints.Contains(possibleWrongFlag)) {
                 wrongFlagsHints.Remove(possibleWrongFlag);
             }
         }
     }
-
-
 }

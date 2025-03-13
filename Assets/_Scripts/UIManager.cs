@@ -76,6 +76,14 @@ public class UIManager : MonoBehaviour {
         });
     }
 
+    public void OnDisable() {
+        GameEvents.OnGridInitialized -= InitializeGridUI;
+        GameEvents.OnEmptyCellRevealed -= RevealEmptyCell;
+        GameEvents.OnMineCellRevealed -= RevealMineCell;
+        GameEvents.OnFlagSet -= SetFlag;
+        GameEvents.OnCellsHighlighted -= HighlightCells;
+        GameEvents.OnFlagCounterUpdate -= UpdateMineCounter;
+    }
     public void InitializeGridUI(int rows, int cols) {
         gridContainer.Clear();
         cells = new Button[rows, cols];

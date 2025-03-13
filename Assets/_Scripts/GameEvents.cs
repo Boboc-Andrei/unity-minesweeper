@@ -10,10 +10,12 @@ class GameEvents {
     public static event Action<int, int> OnCellRightClicked;
 
     public static event Action<int, int, int> OnEmptyCellRevealed;
-    public static event Action<int, int> OnMineCellRevealed;
     public static event Action<int, int, bool> OnFlagSet;
     public static event Action<int> OnFlagCounterUpdate;
 
+    public static event Action<int, int> OnMineCellRevealed;
+    public static event Action OnGameWon;
+        
     public static event Action<List<(int, int)>> OnCellsHighlighted;
 
     public static event Action OnNewGame;
@@ -29,5 +31,6 @@ class GameEvents {
     public static void GridInitialized(int rows, int cols) => OnGridInitialized?.Invoke(rows, cols);
     public static void FlagSet(int row, int col, bool isFlagged) => OnFlagSet?.Invoke(row, col, isFlagged);
     public static void FlagCounterUpdate(int newValue) => OnFlagCounterUpdate?.Invoke(newValue);
-    public static void CellsHighlighted(List<(int, int)> cellsToHighlight) => OnCellsHighlighted?.Invoke(cellsToHighlight);
+    public static void HighlightCells(List<(int, int)> cellsToHighlight) => OnCellsHighlighted?.Invoke(cellsToHighlight);
+    public static void GameWon() => OnGameWon?.Invoke();
 }
