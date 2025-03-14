@@ -2,7 +2,6 @@
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using System.Linq;
 
 
 public class MinesweeperSolver {
@@ -34,6 +33,7 @@ public class MinesweeperSolver {
         if(hintQueue.Count == 0) {
             GenerateHints();
         }
+
         if(hintQueue.Count != 0) {
 
             if(dequeue) {
@@ -49,9 +49,8 @@ public class MinesweeperSolver {
 
     public void GenerateHints() {
         hintQueue.Clear();
-        ScanForFlaggableCells();
-        ScanForWrongFlags();
         ScanForSolvableNumberCells();
+        ScanForFlaggableCells();
     }
 
     private void FlushObsoleteHints() {
@@ -78,47 +77,34 @@ public class MinesweeperSolver {
         }
     }
 
+
     private void ScanForFlaggableCells() {
-        for(int row = 0; row < grid.Rows; row++) {
-            for(int col = 0; col < grid.Columns; col++) {
-                Cell cell = grid.Fields[row, col];
-                var unrevealedNeighbours = grid.GetUnrevealedNeighbours(cell);
+        foreach(Cell cell in grid.activeCells) {
+            var unrevealedNeighbours = grid.GetUnrevealedNeighbours(cell);
 
+            if (cell.NeighbouringMines == 0 ||
+                !cell.IsRevealed ||
+                unrevealedNeighbours.Count == 0 ||
+                cell.NeighbouringMines - cell.NeighbouringFlags != unrevealedNeighbours.Count) {
+                continue;
+            }
 
-                if (!cell.IsRevealed) continue;
-                if (cell.NeighbouringMines == 0) continue;
-                if (unrevealedNeighbours.Count == 0) continue;
-                if (cell.NeighbouringMines - ConfirmedCellNeighbouringFlags(cell) != unrevealedNeighbours.Count) continue;
-
-                foreach (var neighbour in unrevealedNeighbours) {
-                    MoveHint newHint = CreateFlagCellHint(neighbour);
-                    flaggableCells.Add(neighbour);
-                    hintQueue.Enqueue(newHint);
-                    DebugLog.Log($"enqueued flaggable hint: {newHint}");
-                }
+            foreach (var neighbour in unrevealedNeighbours) {
+                MoveHint newHint = CreateFlagCellHint(neighbour);
+                flaggableCells.Add(neighbour);
+                hintQueue.Enqueue(newHint);
+                DebugLog.Log($"enqueued flaggable hint: {newHint}");
             }
         }
     }
 
-    private int ConfirmedCellNeighbouringFlags(Cell cell) {
-        return grid.GetCellNeighbours(cell).Where(n => flaggableCells.Contains(n)).Count();
-    }
-
-    private void ScanForWrongFlags() {
-        foreach(var flaggedCell in userPlacedFlags) {
-            if (flaggableCells.Contains(flaggedCell)) continue;
-            var newHint = CreateWrongFlagHint(flaggedCell);
+    public void OnUserToggledFlag(Cell cell) {
+        ScanForFlaggableCells();
+        if (cell.IsFlagged) {
+            if (flaggableCells.Contains(cell)) return;
+            var newHint = CreateWrongFlagHint(cell);
             hintQueue.Enqueue(newHint);
             DebugLog.Log($"enqueued wrong flag hint: {newHint}");
-        }
-    }
-
-    public void OnUserToggledFlag(Cell cell) {
-        if (cell.IsFlagged) {
-            userPlacedFlags.Add(cell);
-        }
-        else {
-            userPlacedFlags.Remove(cell);
         }
     }
 }

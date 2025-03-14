@@ -103,10 +103,11 @@ public class GameManager : MonoBehaviour {
     public void OnCellClicked(int row, int col) {
 
         Cell cell = Grid.Fields[row, col];
-        Solver.GenerateHints();
+        bool firstClick = false;
 
         if (!GameStarted) {
             GameStarted = true;
+            firstClick = true;
             Grid.PlaceMines(guaranteedFree: cell);
         }
 
@@ -115,6 +116,11 @@ public class GameManager : MonoBehaviour {
         }
         else if (!cell.IsFlagged) {
             Grid.RevealCellCascading(cell);
+        }
+
+        if(firstClick) {
+            firstClick = false;
+            Solver.GenerateHints();
         }
     }
 
