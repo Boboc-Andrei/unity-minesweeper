@@ -7,8 +7,8 @@ using Unity.VisualScripting;
 public class MinesweeperSolver {
     private MinesweeperGrid grid;
     public HashSet<Cell> flaggableCells = new HashSet<Cell>();
-    private HashSet<Cell> userPlacedFlags = new HashSet<Cell>();
 
+    private HashSet<MoveHint> allHintsSet = new HashSet<MoveHint>();
     public HintPriorityQueue<MoveHint> hintQueue = new();
     public int WrongFlagsCount => hintQueue.PriorityCount(0);
 
@@ -48,7 +48,6 @@ public class MinesweeperSolver {
     }
 
     public void GenerateHints() {
-        hintQueue.Clear();
         ScanForSolvableNumberCells();
         ScanForFlaggableCells();
     }
@@ -62,6 +61,7 @@ public class MinesweeperSolver {
             if (!hint.IsObsolete()) break;
             count++;
             DebugLog.Log($"hint obsolete: {hint.ToString()}");
+            allHintsSet.Remove(hint);
             hintQueue.Dequeue();
         }
         DebugLog.Log($"Flushed {count} hints");
@@ -71,6 +71,8 @@ public class MinesweeperSolver {
         foreach(Cell cell in grid.activeCells) {
             if (cell.HasAllMinesFlagged && grid.GetUnrevealedNeighbours(cell).Count != 0) {
                 MoveHint newHint = CreateFlagsSatisfiedHint(cell);
+                if (allHintsSet.Contains(newHint)) { DebugLog.Log($"hint already exists, skipping: {newHint}"); continue; }
+                allHintsSet.Add(newHint);
                 hintQueue.Enqueue(newHint);
                 DebugLog.Log($"enqueued reveal hint: {newHint}");
             }
@@ -91,6 +93,8 @@ public class MinesweeperSolver {
 
             foreach (var neighbour in unrevealedNeighbours) {
                 MoveHint newHint = CreateFlagCellHint(neighbour);
+                if (allHintsSet.Contains(newHint)) { DebugLog.Log($"hint already exists, skipping: {newHint}"); continue; }
+                allHintsSet.Add(newHint);
                 flaggableCells.Add(neighbour);
                 hintQueue.Enqueue(newHint);
                 DebugLog.Log($"enqueued flaggable hint: {newHint}");
@@ -99,10 +103,12 @@ public class MinesweeperSolver {
     }
 
     public void OnUserToggledFlag(Cell cell) {
-        ScanForFlaggableCells();
+        GenerateHints();
         if (cell.IsFlagged) {
             if (flaggableCells.Contains(cell)) return;
             var newHint = CreateWrongFlagHint(cell);
+            if (allHintsSet.Contains(newHint)) { DebugLog.Log($"hint already exists, skipping: {newHint}"); return; }
+            allHintsSet.Add(newHint);
             hintQueue.Enqueue(newHint);
             DebugLog.Log($"enqueued wrong flag hint: {newHint}");
         }
