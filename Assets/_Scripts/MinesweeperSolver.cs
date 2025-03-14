@@ -1,112 +1,124 @@
 ﻿using System.Diagnostics;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
+using System.Linq;
 
 
 public class MinesweeperSolver {
     private MinesweeperGrid grid;
-    private Queue<MoveHint> hintQueue = new Queue<MoveHint>();
-    private HashSet<MoveHint> hintSet = new HashSet<MoveHint>();
-    private List<MoveHint> wrongFlagsHints = new List<MoveHint>();
-    private HashSet<Cell> flaggableCells = new HashSet<Cell>();
+    public HashSet<Cell> flaggableCells = new HashSet<Cell>();
+    private HashSet<Cell> userPlacedFlags = new HashSet<Cell>();
+
+    public HintPriorityQueue<MoveHint> hintQueue = new();
+    public int WrongFlagsCount => hintQueue.PriorityCount(0);
 
     public int flaggableCellsCount => flaggableCells.Count;
     public MinesweeperSolver(MinesweeperGrid grid) {
         this.grid = grid;
     }
+    private MoveHint CreateFlagsSatisfiedHint(Cell affectedCell) {
+        return new FlagsSatisfiedHint(affectedCell, grid, this);
+    }
+    private MoveHint CreateFlagCellHint(Cell affectedCell) {
+        return new FlagCellHint(affectedCell, grid, this);
+    }
+    private MoveHint CreateWrongFlagHint(Cell affectedCell) {
+        return new WrongFlagHint(affectedCell, grid, this);
+    }
+
 
     public MoveHint GetHint(bool dequeue = true) {
-        if(wrongFlagsHints.Count != 0) {
-            MoveHint wrongFlagHint = wrongFlagsHints[0];
-            if(dequeue) wrongFlagsHints.Remove(wrongFlagHint);
-            return wrongFlagHint;
-        }
+        FlushObsoleteHints();
 
         if(hintQueue.Count == 0) {
             GenerateHints();
         }
+        if(hintQueue.Count != 0) {
 
-        while(hintQueue.Count != 0) {
-            MoveHint hint = hintQueue.Peek();
-
-            if (hint.IsObsolete()) {
-                hintQueue.Dequeue();
+            if(dequeue) {
+                return hintQueue.Dequeue();
             }
             else {
-                if (dequeue) hintQueue.Dequeue();
-                return hint;
+                return hintQueue.Peek();
             }
         }
+
         return null;
     }
 
     public void GenerateHints() {
         hintQueue.Clear();
-        hintSet.Clear();
-        ScanForSolvableNumberCells();
         ScanForFlaggableCells();
+        ScanForWrongFlags();
+        ScanForSolvableNumberCells();
+    }
+
+    private void FlushObsoleteHints() {
+        DebugLog.Log("Flushing obsolete hints");
+        int count = 0;
+        while (hintQueue.Count != 0) {
+            MoveHint hint = hintQueue.Peek();
+
+            if (!hint.IsObsolete()) break;
+            count++;
+            DebugLog.Log($"hint obsolete: {hint.ToString()}");
+            hintQueue.Dequeue();
+        }
+        DebugLog.Log($"Flushed {count} hints");
     }
 
     private void ScanForSolvableNumberCells() {
-        for (int row = 0; row < grid.Rows; row++) {
-            for (int col = 0; col < grid.Columns; col++) {
+        foreach(Cell cell in grid.activeCells) {
+            if (cell.HasAllMinesFlagged && grid.GetUnrevealedNeighbours(cell).Count != 0) {
+                MoveHint newHint = CreateFlagsSatisfiedHint(cell);
+                hintQueue.Enqueue(newHint);
+                DebugLog.Log($"enqueued reveal hint: {newHint}");
+            }
+        }
+    }
+
+    private void ScanForFlaggableCells() {
+        for(int row = 0; row < grid.Rows; row++) {
+            for(int col = 0; col < grid.Columns; col++) {
                 Cell cell = grid.Fields[row, col];
-                if (cell.HasAllMinesFlagged && grid.GetUnrevealedNeighbours(cell).Count != 0) {
-                    MoveHint newHint = CreateFlagsSatisfiedHint(cell);
-                    if (hintSet.Contains(newHint)) continue;
+                var unrevealedNeighbours = grid.GetUnrevealedNeighbours(cell);
+
+
+                if (!cell.IsRevealed) continue;
+                if (cell.NeighbouringMines == 0) continue;
+                if (unrevealedNeighbours.Count == 0) continue;
+                if (cell.NeighbouringMines - ConfirmedCellNeighbouringFlags(cell) != unrevealedNeighbours.Count) continue;
+
+                foreach (var neighbour in unrevealedNeighbours) {
+                    MoveHint newHint = CreateFlagCellHint(neighbour);
+                    flaggableCells.Add(neighbour);
                     hintQueue.Enqueue(newHint);
-                    hintSet.Add(newHint);
+                    DebugLog.Log($"enqueued flaggable hint: {newHint}");
                 }
             }
         }
     }
 
-    private MoveHint CreateFlagsSatisfiedHint(Cell affectedCell) {
-        return new FlagsSatisfiedHint(affectedCell, grid);
-    }
-    private MoveHint CreateFlagCellHint(Cell affectedCell) {
-        return new FlagCellHint(affectedCell, grid);
-    }
-    private MoveHint CreateWrongFlagHint(Cell affectedCell) {
-        return new WrongFlagHint(affectedCell, grid);
+    private int ConfirmedCellNeighbouringFlags(Cell cell) {
+        return grid.GetCellNeighbours(cell).Where(n => flaggableCells.Contains(n)).Count();
     }
 
-    private void ScanForFlaggableCells() {
-        for (int row = 0; row < grid.Rows; row++) {
-            for (int col = 0; col < grid.Columns; col++) {
-                Cell cell = grid.Fields[row, col];
-                var unrevealedNeighbours = grid.GetUnrevealedNeighbours(cell);
-
-                if(cell.NeighbouringMines == 0 ||
-                    !cell.IsRevealed ||
-                    unrevealedNeighbours.Count == 0 ||
-                    cell.NeighbouringMines - cell.NeighbouringFlags != unrevealedNeighbours.Count) {
-                    continue;
-                }
-
-                foreach(var neighbour in unrevealedNeighbours) {
-                    MoveHint newHint = CreateFlagCellHint(neighbour);
-                    if (!flaggableCells.Contains(neighbour)) flaggableCells.Add(neighbour);
-                    if (hintSet.Contains(newHint)) continue;
-                    hintQueue.Enqueue(newHint);
-                    hintSet.Add(newHint);
-                }
-            }
+    private void ScanForWrongFlags() {
+        foreach(var flaggedCell in userPlacedFlags) {
+            if (flaggableCells.Contains(flaggedCell)) continue;
+            var newHint = CreateWrongFlagHint(flaggedCell);
+            hintQueue.Enqueue(newHint);
+            DebugLog.Log($"enqueued wrong flag hint: {newHint}");
         }
     }
 
     public void OnUserToggledFlag(Cell cell) {
-        if(cell.IsFlagged) {
-            if (flaggableCells.Contains(cell)) return;
-            wrongFlagsHints.Add(CreateWrongFlagHint(cell));
+        if (cell.IsFlagged) {
+            userPlacedFlags.Add(cell);
         }
         else {
-            MoveHint possibleWrongFlag = CreateWrongFlagHint(cell);
-            if (wrongFlagsHints.Contains(possibleWrongFlag)) {
-                wrongFlagsHints.Remove(possibleWrongFlag);
-            }
+            userPlacedFlags.Remove(cell);
         }
     }
 }

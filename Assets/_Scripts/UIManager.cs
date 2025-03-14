@@ -1,12 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using Unity.Burst.CompilerServices;
 using UnityEditor.SpeedTree.Importer;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour {
+
+    [SerializeField]
+    private bool ShowActiveCells = true;
 
     public VisualElement root;
     public GameManager gameManager;
@@ -21,6 +25,7 @@ public class UIManager : MonoBehaviour {
 
     private VisualElement gridContainer;
     private Button[,] cells;
+    private int Rows, Cols;
 
 
     public TileSprites sprites;
@@ -46,6 +51,7 @@ public class UIManager : MonoBehaviour {
         GameEvents.OnFlagSet += SetFlag;
         GameEvents.OnCellsHighlighted += HighlightCells;
         GameEvents.OnFlagCounterUpdate += UpdateMineCounter;
+        GameEvents.OnUpdateActiveCells += HighlightActiveCells;
 
         newGameButton.RegisterCallback<ClickEvent>(evt => {
             if (evt.button == 0) {
@@ -84,16 +90,19 @@ public class UIManager : MonoBehaviour {
         GameEvents.OnCellsHighlighted -= HighlightCells;
         GameEvents.OnFlagCounterUpdate -= UpdateMineCounter;
     }
+
     public void InitializeGridUI(int rows, int cols) {
         gridContainer.Clear();
-        cells = new Button[rows, cols];
+        Rows = rows;
+        Cols = cols;
+        cells = new Button[Rows, Cols];
 
-        for (int row = 0; row < rows; row++) {
+        for (int row = 0; row < Rows; row++) {
             VisualElement rowContainer = new VisualElement();
             rowContainer.AddToClassList("row");
             gridContainer.Add(rowContainer);
 
-            for (int col = 0; col < cols; col++) {
+            for (int col = 0; col < Cols; col++) {
                 Button button = new Button();
                 button.AddToClassList("cell");
                 button.style.backgroundImage = new StyleBackground(sprites.notRevealed);
@@ -138,6 +147,21 @@ public class UIManager : MonoBehaviour {
     public void HighlightCells(List<(int, int)> cellsToHighlight) {
         foreach(var (row, col) in cellsToHighlight) {
             StartCoroutine(HighlightCellForSeconds(cells[row, col], 1));
+        }
+    }
+
+    private void HighlightActiveCells(List<(int, int)> activeCells) {
+        if (!ShowActiveCells) return;
+        ResetActiveCellsHighlight();
+        foreach(var (row, col) in activeCells) {
+            cells[row, col].AddToClassList("active");
+        }
+    }
+    private void ResetActiveCellsHighlight() {
+        for(int row = 0; row < Rows; row++) {
+            for(int col = 0; col < Cols; col++) {
+                cells[row, col].RemoveFromClassList("active");
+            }
         }
     }
 

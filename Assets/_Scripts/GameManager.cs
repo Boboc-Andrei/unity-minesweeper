@@ -72,7 +72,6 @@ public class GameManager : MonoBehaviour {
         GameEvents.OnGameWon += GameWon;
     }
 
-
     public void OnDisable() {
         GameEvents.OnCellClicked -= OnCellClicked;
         GameEvents.OnCellRightClicked -= OnCellRightClicked;
@@ -80,8 +79,8 @@ public class GameManager : MonoBehaviour {
         GameEvents.OnNewGame -= NewGame;
         GameEvents.OnMineCellRevealed -= OnMineRevealed;
         GameEvents.OnGameWon -= GameWon;
-
     }
+
     public void NewGame() {
         GridGenerator = new GridGenerator(Mines);
         Grid = new MinesweeperGrid(GridRows, GridCols, GridGenerator);
@@ -104,11 +103,10 @@ public class GameManager : MonoBehaviour {
     public void OnCellClicked(int row, int col) {
 
         Cell cell = Grid.Fields[row, col];
-        bool firstClick = false;
+        Solver.GenerateHints();
 
         if (!GameStarted) {
             GameStarted = true;
-            firstClick = true;
             Grid.PlaceMines(guaranteedFree: cell);
         }
 
@@ -118,11 +116,8 @@ public class GameManager : MonoBehaviour {
         else if (!cell.IsFlagged) {
             Grid.RevealCellCascading(cell);
         }
-
-        if(firstClick) {
-            Solver.GenerateHints();
-        }
     }
+
     private void OnMineRevealed(int row, int col) {
         GameOver();
     }

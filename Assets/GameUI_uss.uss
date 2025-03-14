@@ -99,3 +99,7 @@
 .highlighted {
     -unity-background-image-tint-color: rgba(255, 243, 54, 0.88);
 }
+
+.active {
+    -unity-background-image-tint-color: rgb(255, 126, 71);
+}

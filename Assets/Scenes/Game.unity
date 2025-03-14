@@ -501,6 +501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8144d897e69c54b4aba59e0f61ae6f4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowActiveCells: 1
   gameManager: {fileID: 1556813273}
   sprites: {fileID: 11400000, guid: 303a124cd2f0aa6409381d8796b37308, type: 2}
 --- !u!1660057539 &9223372036854775807

@@ -22,6 +22,8 @@ class GameEvents {
     public static event Action<int, int> OnGridInitialized;
     public static event Action<Difficulty> OnDifficultyChanged;
 
+    public static event Action<List<(int, int)>> OnUpdateActiveCells;
+
     public static void CellClicked(int row, int col) => OnCellClicked?.Invoke(row, col);
     public static void CellRightClicked(int row, int col) => OnCellRightClicked?.Invoke(row, col);
     public static void EmptyCellRevealed(int row, int col, int neighbouringMines) => OnEmptyCellRevealed?.Invoke(row, col, neighbouringMines);
@@ -33,4 +35,5 @@ class GameEvents {
     public static void FlagCounterUpdate(int newValue) => OnFlagCounterUpdate?.Invoke(newValue);
     public static void HighlightCells(List<(int, int)> cellsToHighlight) => OnCellsHighlighted?.Invoke(cellsToHighlight);
     public static void GameWon() => OnGameWon?.Invoke();
+    public static void UpdateActiveCells(List<(int,int)> activeCells) => OnUpdateActiveCells?.Invoke(activeCells);
 }
