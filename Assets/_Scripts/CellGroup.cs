@@ -12,8 +12,8 @@ public class CellGroup
     public int MinesInGroup;
     private MinesweeperSolver Solver;
     public bool IsEmpty => Cells.Count == 0;
-    public bool IsMineGroup => MinesInGroup == Cells.Count;
-    public bool IsRevealable => MinesInGroup == 0;
+    public bool IsMineGroup => MinesInGroup == Cells.Count && !IsEmpty;
+    public bool IsRevealable => MinesInGroup == 0 && !IsEmpty;
 
     public CellGroup(List<Cell> cells, Cell owner, int minesInGroup, MinesweeperSolver solver) {
         Cells = cells;
@@ -31,6 +31,13 @@ public class CellGroup
             if (!otherGroupCells.Contains(cell)) return false;
         }
         return true;
+    }
+
+    public bool HasOverlapWith(CellGroup other) {
+        foreach(var cell in Cells) {
+            if (other.Contains(cell)) return true;
+        }
+        return false;
     }
 
     public bool IsObsolete() {

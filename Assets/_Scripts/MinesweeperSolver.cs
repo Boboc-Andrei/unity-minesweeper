@@ -87,33 +87,53 @@ public class MinesweeperSolver {
                 this);
 
             foreach(CellGroup group in groups) {
-                CellGroup differenceGroup;
-                if (newCellGroup.IsContainedWithin(group.Cells)) {
-                    differenceGroup = newCellGroup.SubstractFrom(group);
+
+                if (!newCellGroup.HasOverlapWith(group)) continue;
+
+                //(var majorGroup, var minorGroup) = newCellGroup.MinesInGroup > group.MinesInGroup || newCellGroup.Cells.Count > group.Cells.Count ? (newCellGroup, group) : (group, newCellGroup);
+                CellGroup majorGroup, minorGroup;
+
+
+                if (newCellGroup.MinesInGroup > group.MinesInGroup) {
+                    majorGroup = newCellGroup;
+                    minorGroup = group;
+                }
+                else if (group.MinesInGroup > newCellGroup.MinesInGroup) {
+                    majorGroup = group;
+                    minorGroup = newCellGroup;
+                }
+                else if (newCellGroup.IsContainedWithin(group.Cells)) {
+                    majorGroup = group;
+                    minorGroup = newCellGroup;
                 }
                 else if (group.IsContainedWithin(newCellGroup.Cells)) {
-                    differenceGroup = group.SubstractFrom(newCellGroup);
+                    majorGroup = newCellGroup;
+                    minorGroup = group;
                 }
                 else continue;
-                if (differenceGroup.IsEmpty) continue;
 
-                if(differenceGroup.IsMineGroup) {
-                    foreach(var mineCell in differenceGroup.Cells) {
+                var revealGroup = minorGroup.SubstractFrom(majorGroup);
+                if(revealGroup.IsRevealable) {
+                    DebugLog.Log($"group of ({majorGroup.Owner.Row},{majorGroup.Owner.Col}) has {majorGroup.MinesInGroup} mines," +
+                        $"overlaps with group of ({minorGroup.Owner.Row},{minorGroup.Owner.Col}) with {minorGroup.MinesInGroup} mines." +
+                        $"difference group has {revealGroup.Cells.Count} cells to reveal:");
+                    foreach (var revealableCell in revealGroup.Cells) {
+                        DebugLog.Log($"({revealableCell.Row},{revealableCell.Col})");
+                        var newHint = CreateRevealCellHint(revealableCell);
+                        EnqueueIfUnique(newHint);
+                    }
+                }
+
+                var minesGroup = majorGroup.SubstractFrom(minorGroup);
+                if(minesGroup.IsMineGroup) {
+                    foreach (var mineCell in minesGroup.Cells) {
                         var newHint = CreateFlagCellHint(mineCell);
                         EnqueueIfUnique(newHint);
                         flaggableCells.Add(mineCell);
                     }
                 }
-                else if(differenceGroup.IsRevealable) {
-                    foreach(var revealableCell in differenceGroup.Cells) {
-                        var newHint = CreateRevealCellHint(revealableCell);
-                        EnqueueIfUnique(newHint);
-                    }
-                }
             }
-            
-            groups.Add(newCellGroup);
-            
+            groups.Add(newCellGroup);           
         }
     }
 
