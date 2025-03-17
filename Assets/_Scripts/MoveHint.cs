@@ -41,7 +41,7 @@ public class FlagsSatisfiedHint : MoveHint {
     }
 
     public override bool IsObsolete() {
-        return Grid.GetUnrevealedNeighbours(AffectedCell, includeFlagged: false).Count == 0;
+        return Grid.GetUnrevealedNeighbours(AffectedCell, includeFlagged: false).Count == 0 || !AffectedCell.HasAllMinesFlagged;
     }
 
     public override void Solve() {
@@ -91,6 +91,25 @@ public class WrongFlagHint : MoveHint {
 
     public override string ToString() {
         return $"(cell ({AffectedCell.Row}, {AffectedCell.Col}) wrong flag)";
+    }
+}
+
+internal class RevealCellHint : MoveHint {
+    public RevealCellHint(Cell affectedCell, MinesweeperGrid grid, MinesweeperSolver solver) : base(affectedCell, grid, solver) {
+    }
+
+    public override int Priority { get; } = 3;
+
+    public override List<Cell> GetAffectedCells() {
+        return new List<Cell> { AffectedCell };
+    }
+
+    public override bool IsObsolete() {
+        return AffectedCell.IsRevealed;
+    }
+
+    public override void Solve() {
+        Grid.RevealCellCascading(AffectedCell);
     }
 }
 

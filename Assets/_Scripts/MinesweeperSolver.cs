@@ -2,11 +2,14 @@
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 
 public class MinesweeperSolver {
     private MinesweeperGrid grid;
     public HashSet<Cell> flaggableCells = new HashSet<Cell>();
+    public HashSet<CellGroup> groups = new HashSet<CellGroup>();
 
     private HashSet<MoveHint> allHintsSet = new HashSet<MoveHint>();
     public HintPriorityQueue<MoveHint> hintQueue = new();
@@ -25,7 +28,9 @@ public class MinesweeperSolver {
     private MoveHint CreateWrongFlagHint(Cell affectedCell) {
         return new WrongFlagHint(affectedCell, grid, this);
     }
-
+    private MoveHint CreateRevealCellHint(Cell affectedCell) {
+        return new RevealCellHint(affectedCell, grid, this);
+    }
 
     public MoveHint GetHint(bool dequeue = true) {
         FlushObsoleteHints();
@@ -48,8 +53,64 @@ public class MinesweeperSolver {
     }
 
     public void GenerateHints() {
-        ScanForSolvableNumberCells();
-        ScanForFlaggableCells();
+        GenerateGroups();
+        //ScanForSolvableNumberCells();
+        //ScanForFlaggableCells();
+    }
+
+    private void GenerateGroups() {
+        groups.Clear();
+
+        foreach(var cell in grid.ActiveCells) {
+            if (!cell.IsRevealed) continue;
+            List<Cell> unrevealedNeighbours = grid.GetUnrevealedNeighbours(cell, includeFlagged: false);
+
+            CellGroup newCellGroup = new CellGroup(
+                unrevealedNeighbours,
+                cell.NeighbouringMines - cell.NeighbouringFlags,
+                this);
+
+            if(newCellGroup.IsMineGroup) {
+                foreach(var neighbour in unrevealedNeighbours) {
+                    var newHint = CreateFlagCellHint(neighbour);
+                    EnqueueIfUnique(newHint);
+                    flaggableCells.Add(neighbour);
+                }
+            }
+            else if(newCellGroup.IsRevealable) {
+                var newHint = CreateFlagsSatisfiedHint(cell);
+                EnqueueIfUnique(newHint);
+            }
+            else {
+                foreach(CellGroup group in groups) {
+                    CellGroup differenceGroup;
+                    if (newCellGroup.IsContainedWithin(group.Cells)) {
+                        differenceGroup = newCellGroup.SubstractFrom(group);
+                    }
+                    else if (group.IsContainedWithin(newCellGroup.Cells)) {
+                        differenceGroup = group.SubstractFrom(newCellGroup);
+                    }
+                    else continue;
+                    if (differenceGroup.IsEmpty) continue;
+
+                    if(differenceGroup.IsMineGroup) {
+                        foreach(var mineCell in differenceGroup.Cells) {
+                            var newHint = CreateFlagCellHint(mineCell);
+                            EnqueueIfUnique(newHint);
+                            flaggableCells.Add(mineCell);
+                        }
+                    }
+                    else if(differenceGroup.IsRevealable) {
+                        foreach(var revealableCell in differenceGroup.Cells) {
+                            var newHint = CreateRevealCellHint(revealableCell);
+                            EnqueueIfUnique(newHint);
+                        }
+                    }
+                }
+            }
+            groups.Add(newCellGroup);
+            
+        }
     }
 
     private void FlushObsoleteHints() {
@@ -67,21 +128,37 @@ public class MinesweeperSolver {
         DebugLog.Log($"Flushed {count} hints");
     }
 
+    public void OnUserToggledFlag(Cell cell) {
+        GenerateHints();
+        if (cell.IsFlagged) {
+            if (flaggableCells.Contains(cell)) return;
+            var newHint = CreateWrongFlagHint(cell);
+            if(EnqueueIfUnique(newHint))
+                DebugLog.Log($"enqueued wrong flag hint: {newHint}");
+        }
+    }
+
+    private bool EnqueueIfUnique(MoveHint hint) {
+        if (allHintsSet.Contains(hint)) { DebugLog.Log($"hint already exists: {hint}"); return false; }
+        allHintsSet.Add(hint);
+        hintQueue.Enqueue(hint);
+        return true;
+    }
+
+    [Obsolete("ScanForSolvableNumberCells is deprecated, use GenerateGroups instead")]
     private void ScanForSolvableNumberCells() {
-        foreach(Cell cell in grid.activeCells) {
+        foreach (Cell cell in grid.ActiveCells) {
             if (cell.HasAllMinesFlagged && grid.GetUnrevealedNeighbours(cell).Count != 0) {
                 MoveHint newHint = CreateFlagsSatisfiedHint(cell);
-                if (allHintsSet.Contains(newHint)) { DebugLog.Log($"hint already exists, skipping: {newHint}"); continue; }
-                allHintsSet.Add(newHint);
-                hintQueue.Enqueue(newHint);
-                DebugLog.Log($"enqueued reveal hint: {newHint}");
+                if (EnqueueIfUnique(newHint))
+                    DebugLog.Log($"enqueued reveal hint: {newHint}");
             }
         }
     }
 
-
+    [Obsolete("ScanForFlaggableCells is deprecated, use GenerateGroups instead")]
     private void ScanForFlaggableCells() {
-        foreach(Cell cell in grid.activeCells) {
+        foreach (Cell cell in grid.ActiveCells) {
             var unrevealedNeighbours = grid.GetUnrevealedNeighbours(cell);
 
             if (cell.NeighbouringMines == 0 ||
@@ -93,24 +170,11 @@ public class MinesweeperSolver {
 
             foreach (var neighbour in unrevealedNeighbours) {
                 MoveHint newHint = CreateFlagCellHint(neighbour);
-                if (allHintsSet.Contains(newHint)) { DebugLog.Log($"hint already exists, skipping: {newHint}"); continue; }
-                allHintsSet.Add(newHint);
+                if (EnqueueIfUnique(newHint))
+                    DebugLog.Log($"enqueued flaggable hint: {newHint}");
                 flaggableCells.Add(neighbour);
-                hintQueue.Enqueue(newHint);
-                DebugLog.Log($"enqueued flaggable hint: {newHint}");
             }
         }
     }
-
-    public void OnUserToggledFlag(Cell cell) {
-        GenerateHints();
-        if (cell.IsFlagged) {
-            if (flaggableCells.Contains(cell)) return;
-            var newHint = CreateWrongFlagHint(cell);
-            if (allHintsSet.Contains(newHint)) { DebugLog.Log($"hint already exists, skipping: {newHint}"); return; }
-            allHintsSet.Add(newHint);
-            hintQueue.Enqueue(newHint);
-            DebugLog.Log($"enqueued wrong flag hint: {newHint}");
-        }
-    }
 }
+

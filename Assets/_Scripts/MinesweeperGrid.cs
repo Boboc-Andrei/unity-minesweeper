@@ -8,7 +8,7 @@ using static UnityEngine.Rendering.DebugUI.Table;
 
 public class MinesweeperGrid {
     public Cell[,] Fields;
-    public HashSet<Cell> activeCells = new HashSet<Cell>();
+    public HashSet<Cell> ActiveCells = new HashSet<Cell>();
     public int TotalMines => Generator.TotalMines;
     public bool AllEmptyCellsRevealed => Rows * Columns - TotalMines - RevealedCells == 0;
     public int MinesLeft => TotalMines - FlaggedCells;
@@ -185,36 +185,36 @@ public class MinesweeperGrid {
         if(cell.IsRevealed) {
             var unrevealedNeighbours = GetUnrevealedNeighbours(cell);
             if(unrevealedNeighbours.Count == 0) {
-                activeCells.Remove(cell);
+                ActiveCells.Remove(cell);
             }
             else {
-                activeCells.Add(cell);
+                ActiveCells.Add(cell);
                 foreach (var neighbour in unrevealedNeighbours) {
-                    activeCells.Add(neighbour);
+                    ActiveCells.Add(neighbour);
 
                 }
             }
         }
         else if(cell.IsFlagged) {
-            activeCells.Remove(cell);
+            ActiveCells.Remove(cell);
             var revealedNeighbours = GetCellNeighbours(cell).Where(c => c.IsRevealed).ToList();
             foreach (var neighbour in revealedNeighbours) {
                 if(GetUnrevealedNeighbours(neighbour).Count == 0) {
-                    activeCells.Remove(neighbour);
+                    ActiveCells.Remove(neighbour);
                 }
             }
         }
         else {
             var revealedNeighbours = GetCellNeighbours(cell).Where(c => c.IsRevealed).ToList();
-            if (revealedNeighbours.Count == 0) activeCells.Remove(cell);
+            if (revealedNeighbours.Count == 0) ActiveCells.Remove(cell);
             else {
-                activeCells.Add(cell);
+                ActiveCells.Add(cell);
                 foreach (var neighbour in revealedNeighbours) {
-                    activeCells.Add(neighbour);
+                    ActiveCells.Add(neighbour);
                 }
             }
         }
-        GameEvents.UpdateActiveCells(activeCells.Select(c => (c.Row, c.Col)).ToList());
+        GameEvents.UpdateActiveCells(ActiveCells.Select(c => (c.Row, c.Col)).ToList());
     }
 
     #endregion
