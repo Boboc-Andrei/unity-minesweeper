@@ -156,6 +156,7 @@ public class MinesweeperGrid {
 
             cellsToUpdate.Add(currentCell);
             RevealCell(currentCell);
+            if (currentCell.IsMine) break;
 
             var neighbours = GetCellNeighbours(currentCell);
 

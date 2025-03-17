@@ -48,17 +48,26 @@ public class CellGroup
         return true;
     }
 
-    public CellGroup SubstractFrom(CellGroup other) {
+    public CellGroup RemoveCommonCellsWith(CellGroup other) {
         List<Cell> newGroupCells = new();
 
-        foreach(var cell in other.Cells) {
-            if (!Cells.Contains(cell)) {
+        foreach(var cell in Cells) {
+            if (!other.Contains(cell)) {
                 newGroupCells.Add(cell);
             }
         }
 
-        int newGroupMinesCount = other.MinesInGroup - MinesInGroup;
+        int newGroupMinesCount = MinesInGroup - other.MinesInGroup;
 
         return new CellGroup(newGroupCells, other.Owner, newGroupMinesCount, Solver);
+    }
+
+    public override string ToString() {
+        string output = $"(mines: {MinesInGroup}, cells: [";
+        foreach(var cell in Cells) {
+            output += $"({cell.Row},{cell.Col}),";
+        }
+        output += "]";
+        return output;
     }
 }
