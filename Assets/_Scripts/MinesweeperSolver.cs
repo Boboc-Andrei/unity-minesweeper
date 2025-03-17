@@ -54,8 +54,23 @@ public class MinesweeperSolver {
 
     public void GenerateHints() {
         GenerateGroups();
-        //ScanForSolvableNumberCells();
-        //ScanForFlaggableCells();
+        ScanForSingleGroupHints();
+    }
+
+    private void ScanForSingleGroupHints() {
+        foreach(var group in groups) {
+            if (group.IsMineGroup) {
+                foreach (var neighbour in group.Cells) {
+                    var newHint = CreateFlagCellHint(neighbour);
+                    EnqueueIfUnique(newHint);
+                    flaggableCells.Add(neighbour);
+                }
+            }
+            else if (group.IsRevealable) {
+                var newHint = CreateFlagsSatisfiedHint(group.Owner);
+                EnqueueIfUnique(newHint);
+            }
+        }
     }
 
     private void GenerateGroups() {
@@ -67,47 +82,36 @@ public class MinesweeperSolver {
 
             CellGroup newCellGroup = new CellGroup(
                 unrevealedNeighbours,
+                cell,
                 cell.NeighbouringMines - cell.NeighbouringFlags,
                 this);
 
-            if(newCellGroup.IsMineGroup) {
-                foreach(var neighbour in unrevealedNeighbours) {
-                    var newHint = CreateFlagCellHint(neighbour);
-                    EnqueueIfUnique(newHint);
-                    flaggableCells.Add(neighbour);
+            foreach(CellGroup group in groups) {
+                CellGroup differenceGroup;
+                if (newCellGroup.IsContainedWithin(group.Cells)) {
+                    differenceGroup = newCellGroup.SubstractFrom(group);
                 }
-            }
-            else if(newCellGroup.IsRevealable) {
-                var newHint = CreateFlagsSatisfiedHint(cell);
-                EnqueueIfUnique(newHint);
-            }
-            else {
-                foreach(CellGroup group in groups) {
-                    CellGroup differenceGroup;
-                    if (newCellGroup.IsContainedWithin(group.Cells)) {
-                        differenceGroup = newCellGroup.SubstractFrom(group);
-                    }
-                    else if (group.IsContainedWithin(newCellGroup.Cells)) {
-                        differenceGroup = group.SubstractFrom(newCellGroup);
-                    }
-                    else continue;
-                    if (differenceGroup.IsEmpty) continue;
+                else if (group.IsContainedWithin(newCellGroup.Cells)) {
+                    differenceGroup = group.SubstractFrom(newCellGroup);
+                }
+                else continue;
+                if (differenceGroup.IsEmpty) continue;
 
-                    if(differenceGroup.IsMineGroup) {
-                        foreach(var mineCell in differenceGroup.Cells) {
-                            var newHint = CreateFlagCellHint(mineCell);
-                            EnqueueIfUnique(newHint);
-                            flaggableCells.Add(mineCell);
-                        }
+                if(differenceGroup.IsMineGroup) {
+                    foreach(var mineCell in differenceGroup.Cells) {
+                        var newHint = CreateFlagCellHint(mineCell);
+                        EnqueueIfUnique(newHint);
+                        flaggableCells.Add(mineCell);
                     }
-                    else if(differenceGroup.IsRevealable) {
-                        foreach(var revealableCell in differenceGroup.Cells) {
-                            var newHint = CreateRevealCellHint(revealableCell);
-                            EnqueueIfUnique(newHint);
-                        }
+                }
+                else if(differenceGroup.IsRevealable) {
+                    foreach(var revealableCell in differenceGroup.Cells) {
+                        var newHint = CreateRevealCellHint(revealableCell);
+                        EnqueueIfUnique(newHint);
                     }
                 }
             }
+            
             groups.Add(newCellGroup);
             
         }
