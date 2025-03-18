@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 
 public abstract class MoveHint : IPriority {
     protected MinesweeperGrid Grid { get; }
     protected MinesweeperSolver Solver { get; }
-    public Cell AffectedCell { get; set; }
+    public CellGroup CellGroup { get; set; }
     public abstract int Priority { get; }
 
-    public MoveHint(Cell affectedCell, MinesweeperGrid grid, MinesweeperSolver solver) {
-        AffectedCell = affectedCell;
+    public MoveHint(CellGroup cellGroup, MinesweeperGrid grid, MinesweeperSolver solver) {
+        CellGroup = cellGroup;
         Grid = grid;
         Solver = solver;
     }
 
     public override bool Equals(object? obj) {
-        if(obj is MoveHint other) {
-            return GetType() == other.GetType() && AffectedCell == other.AffectedCell;
+        if (obj is MoveHint other) {
+            return GetType() == other.GetType() && CellGroup == other.CellGroup;
         }
         return false;
     }
     public override int GetHashCode() {
-        return HashCode.Combine(GetType(), AffectedCell);
+        return HashCode.Combine(GetType(), CellGroup);
     }
 
     public abstract void Solve();
@@ -31,85 +32,94 @@ public abstract class MoveHint : IPriority {
 }
 
 public class FlagsSatisfiedHint : MoveHint {
-    public override int Priority { get; } = 2;
-    public FlagsSatisfiedHint(Cell affectedCell, MinesweeperGrid grid, MinesweeperSolver solver) : base(affectedCell, grid, solver) { }
+    public override int Priority { get; } = 1;
+    public FlagsSatisfiedHint(CellGroup cellGroup, MinesweeperGrid grid, MinesweeperSolver solver) : base(cellGroup, grid, solver) { }
 
     public override List<Cell> GetAffectedCells() {
-        List<Cell> affectedCells = Grid.GetUnrevealedNeighbours(AffectedCell, includeFlagged: true);
-        affectedCells.Add(AffectedCell);
+        List<Cell> affectedCells = Grid.GetUnrevealedNeighbours(CellGroup.Owner, includeFlagged: true);
+        affectedCells.Add(CellGroup.Owner);
         return affectedCells;
     }
 
     public override bool IsObsolete() {
-        return Grid.GetUnrevealedNeighbours(AffectedCell, includeFlagged: false).Count == 0 || !AffectedCell.HasAllMinesFlagged;
+        return Grid.GetUnrevealedNeighbours(CellGroup.Owner, includeFlagged: false).Count == 0 || !CellGroup.Owner.HasAllMinesFlagged;
     }
 
     public override void Solve() {
-        Grid.RevealNeighbours(AffectedCell);
+        DebugLog.Log($"solving hint: {ToString()}");
+        Grid.RevealNeighbours(CellGroup.Owner);
     }
 
     public override string ToString() {
-        return $"(cell ({AffectedCell.Row}, {AffectedCell.Col}) flags satisfied)";
+        return $"(cell {CellGroup.Owner} flags satisfied)";
     }
 }
 
-public class FlagCellHint : MoveHint {
-    public override int Priority { get; } = 1;
-    public FlagCellHint(Cell affectedCell, MinesweeperGrid grid, MinesweeperSolver solver) : base(affectedCell, grid, solver) { }
+public class FlagGroupHint : MoveHint {
+    public override int Priority { get; } = 2;
+    public FlagGroupHint(CellGroup cellGroup, MinesweeperGrid grid, MinesweeperSolver solver) : base(cellGroup, grid, solver) { }
 
     public override List<Cell> GetAffectedCells() {
-        return new List<Cell>() { AffectedCell };
+        return new List<Cell>(CellGroup.Cells) { CellGroup.Owner };
     }
 
     public override bool IsObsolete() {
-        return AffectedCell.IsFlagged;
+        return !CellGroup.Cells.Any(cell => !cell.IsFlagged);
     }
 
     public override void Solve() {
-        Grid.SetFlag(AffectedCell, true);
+        DebugLog.Log($"solving hint: {ToString()}");
+        foreach (var cell in CellGroup.Cells) {
+            Grid.SetFlag(cell, true);
+        }
     }
     public override string ToString() {
-        return $"(cell ({AffectedCell.Row}, {AffectedCell.Col}) must be flagged)";
+        string groupCells = string.Join(", ", CellGroup.Cells.Select(cell => cell.ToString()));
+        return $"(cells [{groupCells}] must be flagged)";
     }
 }
 
 public class WrongFlagHint : MoveHint {
     public override int Priority { get; } = 0;
-    public WrongFlagHint(Cell affectedCell, MinesweeperGrid grid, MinesweeperSolver solver) : base(affectedCell, grid, solver) { }
+    public WrongFlagHint(CellGroup cellGroup, MinesweeperGrid grid, MinesweeperSolver solver) : base(cellGroup, grid, solver) { }
 
     public override List<Cell> GetAffectedCells() {
-        return new List<Cell> { AffectedCell };
+        return new List<Cell> { CellGroup.Owner };
     }
 
     public override bool IsObsolete() {
-        return !AffectedCell.IsFlagged || (AffectedCell.IsFlagged && Solver.flaggableCells.Contains(AffectedCell));
+        return !CellGroup.Owner.IsFlagged || (CellGroup.Owner.IsFlagged && Solver.flaggableCells.Contains(CellGroup.Owner));
     }
 
     public override void Solve() {
-        Grid.SetFlag(AffectedCell, false);
+        DebugLog.Log($"solving hint: {ToString()}");
+        Grid.SetFlag(CellGroup.Owner, false);
     }
 
     public override string ToString() {
-        return $"(cell ({AffectedCell.Row}, {AffectedCell.Col}) wrong flag)";
+        return $"(cell ({CellGroup.Owner}) wrong flag)";
     }
 }
 
-internal class RevealCellHint : MoveHint {
-    public RevealCellHint(Cell affectedCell, MinesweeperGrid grid, MinesweeperSolver solver) : base(affectedCell, grid, solver) {
+internal class RevealCellsHint : MoveHint {
+    public RevealCellsHint(CellGroup cellGroup, MinesweeperGrid grid, MinesweeperSolver solver) : base(cellGroup, grid, solver) {
     }
 
     public override int Priority { get; } = 3;
 
     public override List<Cell> GetAffectedCells() {
-        return new List<Cell> { AffectedCell };
+        return new List<Cell>(CellGroup.Cells) { CellGroup.Owner };
     }
 
     public override bool IsObsolete() {
-        return AffectedCell.IsRevealed;
+        return !CellGroup.Cells.Any(cell => !cell.IsRevealed);
     }
 
     public override void Solve() {
-        Grid.RevealCellCascading(AffectedCell);
+        DebugLog.Log($"solving hint: {ToString()}");
+        foreach (var cell in CellGroup.Cells) {
+            Grid.RevealCellCascading(cell);
+        }
     }
 }
 

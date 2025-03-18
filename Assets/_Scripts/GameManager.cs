@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour {
     public int GridRows => currentDifficultySettings.Rows;
     public int GridCols => currentDifficultySettings.Cols;
     public int Mines => currentDifficultySettings.Mines;
+
     [SerializeField]
     private bool StartNewGameOnDifficultyChange = true;
 
@@ -61,6 +62,10 @@ public class GameManager : MonoBehaviour {
             { Difficulty.Extreme, defaultExtreme},
         };
         NewGame();
+    }
+
+    private void InitialSetup() {
+
     }
 
     public void OnEnable() {
@@ -85,7 +90,7 @@ public class GameManager : MonoBehaviour {
         GridGenerator = new GridGenerator(Mines);
         Grid = new MinesweeperGrid(GridRows, GridCols, GridGenerator);
         Grid.InitializeCells();
-        GameEvents.GridInitialized(GridRows, GridCols);
+        GameEvents.GridInitialized(GridRows, GridCols, CurrentDifficulty);
         GameEvents.FlagCounterUpdate(Grid.MinesLeft);
 
         Solver = new MinesweeperSolver(Grid);

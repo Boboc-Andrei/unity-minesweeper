@@ -23,4 +23,8 @@ public class Cell {
         Col = col;
         IsMine = isMine;
     }
+
+    public override string ToString() {
+        return $"({Row}, {Col})";
+    }
 }

@@ -91,8 +91,9 @@ public class UIManager : MonoBehaviour {
         GameEvents.OnFlagCounterUpdate -= UpdateMineCounter;
     }
 
-    public void InitializeGridUI(int rows, int cols) {
+    public void InitializeGridUI(int rows, int cols, Difficulty difficulty) {
         gridContainer.Clear();
+        difficultyDropDown.value = difficulty;
         Rows = rows;
         Cols = cols;
         cells = new Button[Rows, Cols];

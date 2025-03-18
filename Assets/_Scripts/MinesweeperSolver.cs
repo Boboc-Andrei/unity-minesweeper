@@ -20,24 +20,27 @@ public class MinesweeperSolver {
     public MinesweeperSolver(MinesweeperGrid grid) {
         this.grid = grid;
     }
-    private MoveHint CreateFlagsSatisfiedHint(Cell affectedCell) {
-        var newHint = new FlagsSatisfiedHint(affectedCell, grid, this);
+    private MoveHint CreateFlagsSatisfiedHint(CellGroup cellGroup) {
+        var newHint = new FlagsSatisfiedHint(cellGroup, grid, this);
         EnqueueIfUnique(newHint);
         return newHint;
     }
-    private MoveHint CreateFlagCellHint(Cell affectedCell) {
-        var newHint = new FlagCellHint(affectedCell, grid, this);
+    private MoveHint CreateFlagCellsHint(CellGroup cellGroup) {
+        var newHint = new FlagGroupHint(cellGroup, grid, this);
         EnqueueIfUnique(newHint);
-        flaggableCells.Add(affectedCell);
+        foreach(var cell in cellGroup.Cells) {
+            flaggableCells.Add(cell);
+        }
         return newHint;
     }
-    private MoveHint CreateWrongFlagHint(Cell affectedCell) {
-        var newHint = new WrongFlagHint(affectedCell, grid, this);
+    private MoveHint CreateWrongFlagHint(Cell cell) {
+        var wrongFlagGroup = new CellGroup(new List<Cell> { cell }, cell, -1, this);
+        var newHint = new WrongFlagHint(wrongFlagGroup, grid, this);
         EnqueueIfUnique(newHint);
         return newHint;
     }
-    private MoveHint CreateRevealCellHint(Cell affectedCell) {
-        var newHint = new RevealCellHint(affectedCell, grid, this);
+    private MoveHint CreateRevealCellsHint(CellGroup cellGroup) {
+        var newHint = new RevealCellsHint(cellGroup, grid, this);
         EnqueueIfUnique(newHint);
         return newHint;
     }
@@ -66,23 +69,8 @@ public class MinesweeperSolver {
         GenerateGroups();
         ScanForSingleGroupHints();
         if (hintQueue.Count != 0) return;
-        DebugLog.Log("Simple moves exhausted. Applying multiple otherGroup hints");
+        DebugLog.Log("Simple moves exhausted. Applying multiple Group hints");
         ScanForMultipleGroupHints();
-    }
-
-    private void ScanForSingleGroupHints() {
-        foreach (var group in groups) {
-            if (group.IsMineGroup) {
-                foreach (var neighbour in group.Cells) {
-                    var newHint = CreateFlagCellHint(neighbour);
-                    EnqueueIfUnique(newHint);
-                    flaggableCells.Add(neighbour);
-                }
-            }
-            else if (group.IsRevealable) {
-                var newHint = CreateFlagsSatisfiedHint(group.Owner);
-            }
-        }
     }
 
     private void GenerateGroups() {
@@ -102,6 +90,17 @@ public class MinesweeperSolver {
         }
     }
 
+    private void ScanForSingleGroupHints() {
+        foreach (var group in groups) {
+            if (group.IsMineGroup) {
+                var newHint = CreateFlagCellsHint(group);
+            }
+            else if (group.IsRevealable) {
+                var newHint = CreateFlagsSatisfiedHint(group);
+            }
+        }
+    }
+
     private void ScanForMultipleGroupHints() {
 
         foreach (var currentGroup in groups) {
@@ -111,7 +110,7 @@ public class MinesweeperSolver {
 
                 if (otherGroup.IsMineGroup || otherGroup.IsRevealable) continue;
                 if (!currentGroup.HasOverlapWith(otherGroup) || otherGroup == currentGroup) continue;
-                
+
                 CellGroup minesGroup, revealGroup;
 
 
@@ -138,20 +137,14 @@ public class MinesweeperSolver {
 
                 DebugLog.Log($"Exploring otherGroup {currentGroup}\nand {otherGroup}\nreveal group: {revealGroup}\nmine group: {minesGroup}");
                 if (revealGroup.IsRevealable) {
-                    foreach (var revealableCell in revealGroup.Cells) {
-                        var newHint = CreateRevealCellHint(revealableCell);
-                    }
+                    CreateRevealCellsHint(revealGroup);
                 }
 
                 if (minesGroup.IsMineGroup) {
-                    foreach (var mineCell in minesGroup.Cells) {
-                        var newHint = CreateFlagCellHint(mineCell);
-                    }
+                    CreateFlagCellsHint(minesGroup);
                 }
             }
         }
-
-
     }
 
     private void FlushObsoleteHints() {
@@ -179,33 +172,6 @@ public class MinesweeperSolver {
         allHintsSet.Add(hint);
         hintQueue.Enqueue(hint);
         return true;
-    }
-
-    [Obsolete("ScanForSolvableNumberCells is deprecated, use GenerateGroups instead")]
-    private void ScanForSolvableNumberCells() {
-        foreach (Cell cell in grid.ActiveCells) {
-            if (cell.HasAllMinesFlagged && grid.GetUnrevealedNeighbours(cell).Count != 0) {
-                MoveHint newHint = CreateFlagsSatisfiedHint(cell);
-            }
-        }
-    }
-
-    [Obsolete("ScanForFlaggableCells is deprecated, use GenerateGroups instead")]
-    private void ScanForFlaggableCells() {
-        foreach (Cell cell in grid.ActiveCells) {
-            var unrevealedNeighbours = grid.GetUnrevealedNeighbours(cell);
-
-            if (cell.NeighbouringMines == 0 ||
-                !cell.IsRevealed ||
-                unrevealedNeighbours.Count == 0 ||
-                cell.NeighbouringMines - cell.NeighbouringFlags != unrevealedNeighbours.Count) {
-                continue;
-            }
-
-            foreach (var neighbour in unrevealedNeighbours) {
-                MoveHint newHint = CreateFlagCellHint(neighbour);
-            }
-        }
     }
 }
 
