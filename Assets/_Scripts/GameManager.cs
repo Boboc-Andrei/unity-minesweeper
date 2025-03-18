@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,7 +13,8 @@ public enum Difficulty {
 
 public class GameManager : MonoBehaviour {
 
-    private DifficultySettings currentDifficultySettings => defaultDifficulties[CurrentDifficulty];
+    private DifficultySettingsJson currentDifficultySettings => defaultDifficulties[CurrentDifficulty];
+    private Dictionary<Difficulty, DifficultySettingsJson> defaultDifficulties;
 
     [SerializeField]
     public DifficultySettings defaultEasy;
@@ -39,7 +41,6 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public Dictionary<Difficulty, DifficultySettings> defaultDifficulties;
 
     public int GridRows => currentDifficultySettings.Rows;
     public int GridCols => currentDifficultySettings.Cols;
@@ -55,17 +56,24 @@ public class GameManager : MonoBehaviour {
     private bool GameStarted = false;
 
     void Start() {
-        defaultDifficulties = new() {
-            { Difficulty.Easy, defaultEasy },
-            { Difficulty.Medium, defaultMedium },
-            { Difficulty.Hard, defaultHard },
-            { Difficulty.Extreme, defaultExtreme},
-        };
+        SetupDefaultDifficulties();
         NewGame();
     }
 
-    private void InitialSetup() {
+    private void SetupDefaultDifficulties() {
+        TextAsset jsonFile = Resources.Load<TextAsset>("defaultDifficulties");
+        if (jsonFile == null) {
+            Debug.LogError("Failed to load JSON file.");
+            return;
+        }
+        var difficultyOptions = JsonUtility.FromJson<DefaultDifficultySettingsJson>(jsonFile.text);
 
+        if (difficultyOptions == null || difficultyOptions.Items == null) {
+            Debug.LogError("difficultyOptions is NULL or empty.");
+            return;
+        }
+
+        defaultDifficulties = difficultyOptions.Items.ToDictionary(d => Enum.Parse<Difficulty>(d.Name), d => d);
     }
 
     public void OnEnable() {

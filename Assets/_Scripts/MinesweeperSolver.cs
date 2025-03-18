@@ -69,7 +69,6 @@ public class MinesweeperSolver {
         GenerateGroups();
         ScanForSingleGroupHints();
         if (hintQueue.Count != 0) return;
-        DebugLog.Log("Simple moves exhausted. Applying multiple Group hints");
         ScanForMultipleGroupHints();
     }
 
@@ -131,11 +130,9 @@ public class MinesweeperSolver {
                     revealGroup = currentGroup.RemoveCommonCellsWith(otherGroup);
                 }
                 else {
-                    DebugLog.Log("Groups are unable to reveal mines or cells");
                     continue;
                 }
 
-                DebugLog.Log($"Exploring otherGroup {currentGroup}\nand {otherGroup}\nreveal group: {revealGroup}\nmine group: {minesGroup}");
                 if (revealGroup.IsRevealable) {
                     CreateRevealCellsHint(revealGroup);
                 }

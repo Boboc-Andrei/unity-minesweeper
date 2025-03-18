@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "Easy",
+    "Rows": "9",
+    "Cols": "9",
+    "Mines": "10"
+  },
+  {
+    "Name": "Medium",
+    "Rows": "16",
+    "Cols": "16",
+    "Mines": "40"
+  },
+  {
+    "Name": "Hard",
+    "Rows": "16",
+    "Cols": "30",
+    "Mines": "99"
+  },
+  {
+    "Name": "Extreme",
+    "Rows": "24",
+    "Cols": "30",
+    "Mines": "160"
+  }
+]

@@ -370,7 +370,7 @@ MonoBehaviour:
   defaultHard: {fileID: 11400000, guid: 8044d8a4895d4fc45af79704f6576317, type: 2}
   defaultExtreme: {fileID: 11400000, guid: 0f6f1413c8017d54ba64c81f9767c2c7, type: 2}
   solveSpeed: 1
-  _currentDifficulty: 1
+  _currentDifficulty: 0
   StartNewGameOnDifficultyChange: 1
 --- !u!4 &1556813274
 Transform:

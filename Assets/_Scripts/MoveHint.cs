@@ -46,7 +46,6 @@ public class FlagsSatisfiedHint : MoveHint {
     }
 
     public override void Solve() {
-        DebugLog.Log($"solving hint: {ToString()}");
         Grid.RevealNeighbours(CellGroup.Owner);
     }
 
@@ -68,7 +67,6 @@ public class FlagGroupHint : MoveHint {
     }
 
     public override void Solve() {
-        DebugLog.Log($"solving hint: {ToString()}");
         foreach (var cell in CellGroup.Cells) {
             Grid.SetFlag(cell, true);
         }
@@ -92,7 +90,6 @@ public class WrongFlagHint : MoveHint {
     }
 
     public override void Solve() {
-        DebugLog.Log($"solving hint: {ToString()}");
         Grid.SetFlag(CellGroup.Owner, false);
     }
 
@@ -116,7 +113,6 @@ internal class RevealCellsHint : MoveHint {
     }
 
     public override void Solve() {
-        DebugLog.Log($"solving hint: {ToString()}");
         foreach (var cell in CellGroup.Cells) {
             Grid.RevealCellCascading(cell);
         }
