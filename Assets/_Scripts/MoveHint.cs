@@ -16,7 +16,7 @@ public abstract class MoveHint : IPriority {
         Solver = solver;
     }
 
-    public override bool Equals(object? obj) {
+    public override bool Equals(object obj) {
         if (obj is MoveHint other) {
             return GetType() == other.GetType() && CellGroup == other.CellGroup;
         }
@@ -114,7 +114,7 @@ internal class RevealCellsHint : MoveHint {
 
     public override void Solve() {
         foreach (var cell in CellGroup.Cells) {
-            Grid.RevealCellCascading(cell);
+            Grid.RevealCell(cell);
         }
     }
 }

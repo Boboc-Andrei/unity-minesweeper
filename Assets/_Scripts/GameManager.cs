@@ -11,23 +11,10 @@ public enum Difficulty {
     Easy, Medium, Hard, Extreme
 }
 
-public class GameManager : MonoBehaviour {
+public class GameManager {
 
-    private DifficultySettingsJson currentDifficultySettings => defaultDifficulties[CurrentDifficulty];
     private Dictionary<Difficulty, DifficultySettingsJson> defaultDifficulties;
-
-    [SerializeField]
-    public DifficultySettings defaultEasy;
-    [SerializeField]
-    public DifficultySettings defaultMedium;
-    [SerializeField]
-    public DifficultySettings defaultHard;
-    [SerializeField]
-    public DifficultySettings defaultExtreme;
-    [SerializeField]
-    enum SolveSpeed { Slow, Fast, Instant };
-    [SerializeField]
-    private SolveSpeed solveSpeed;
+    private DifficultySettingsJson currentDifficultySettings => defaultDifficulties[CurrentDifficulty];
 
     [SerializeField]
     private Difficulty _currentDifficulty = Difficulty.Medium;
@@ -40,7 +27,6 @@ public class GameManager : MonoBehaviour {
             GameEvents.DifficultyChanged(value);
         }
     }
-
 
     public int GridRows => currentDifficultySettings.Rows;
     public int GridCols => currentDifficultySettings.Cols;
@@ -55,13 +41,12 @@ public class GameManager : MonoBehaviour {
 
     private bool GameStarted = false;
 
-    void Start() {
-        SetupDefaultDifficulties();
-        NewGame();
+    public GameManager(string defaultDifficultiesPath) {
+        SetupDefaultDifficulties(defaultDifficultiesPath);
     }
 
-    private void SetupDefaultDifficulties() {
-        TextAsset jsonFile = Resources.Load<TextAsset>("defaultDifficulties");
+    private void SetupDefaultDifficulties(string defaultDifficultiesPath) {
+        TextAsset jsonFile = Resources.Load<TextAsset>(defaultDifficultiesPath);
         if (jsonFile == null) {
             Debug.LogError("Failed to load JSON file.");
             return;
@@ -76,22 +61,28 @@ public class GameManager : MonoBehaviour {
         defaultDifficulties = difficultyOptions.Items.ToDictionary(d => Enum.Parse<Difficulty>(d.Name), d => d);
     }
 
-    public void OnEnable() {
+    public void SubscribeToEvents() {
         GameEvents.OnCellClicked += OnCellClicked;
         GameEvents.OnCellRightClicked += OnCellRightClicked;
         GameEvents.OnDifficultyChanged += DifficultyChanged;
         GameEvents.OnNewGame += NewGame;
         GameEvents.OnMineCellRevealed += OnMineRevealed;
         GameEvents.OnGameWon += GameWon;
+        GameEvents.OnShowHintClicked += ShowHint;
+        GameEvents.OnPerformHintClicked += PerformHint;
+        GameEvents.OnSolveGridClicked += SolveGrid;
     }
 
-    public void OnDisable() {
+    public void UnSubscribeToEvents() {
         GameEvents.OnCellClicked -= OnCellClicked;
         GameEvents.OnCellRightClicked -= OnCellRightClicked;
         GameEvents.OnDifficultyChanged -= DifficultyChanged;
         GameEvents.OnNewGame -= NewGame;
         GameEvents.OnMineCellRevealed -= OnMineRevealed;
         GameEvents.OnGameWon -= GameWon;
+        GameEvents.OnShowHintClicked -= ShowHint;
+        GameEvents.OnPerformHintClicked -= PerformHint;
+        GameEvents.OnSolveGridClicked -= SolveGrid;
     }
 
     public void NewGame() {
@@ -108,7 +99,7 @@ public class GameManager : MonoBehaviour {
     public void DifficultyChanged(Difficulty newDifficulty) {
         if (newDifficulty == CurrentDifficulty) return;
         CurrentDifficulty = newDifficulty;
-        if(StartNewGameOnDifficultyChange) {
+        if (StartNewGameOnDifficultyChange) {
             NewGame();
         }
     }
@@ -126,7 +117,7 @@ public class GameManager : MonoBehaviour {
             Grid.RevealNeighbours(cell);
         }
         else if (!cell.IsFlagged) {
-            Grid.RevealCellCascading(cell);
+            Grid.RevealCell(cell);
         }
 
         Solver.GenerateHints();
@@ -146,63 +137,36 @@ public class GameManager : MonoBehaviour {
     }
 
     public void GameOver() {
-        print("Game over sequence to be implemented");
+        DebugLog.Log("Game over sequence to be implemented");
     }
 
     public void GameWon() {
-        print("Game won sequence to be implemented");
+        DebugLog.Log("Game won sequence to be implemented");
     }
 
-    internal bool ShowHint() {
+    internal void ShowHint() {
         MoveHint hint = Solver.GetHint(dequeue: false);
-        if(hint == null) {
+        if (hint == null) {
             Debug.Log("Unable to provide hint");
-            return false;
+            return;
         }
 
         List<Cell> cellsToHighlight = hint.GetAffectedCells();
         GameEvents.HighlightCells(cellsToHighlight.Select(cell => (cell.Row, cell.Col)).ToList());
-        return true;
     }
 
-    internal bool PerformHint() {
+    internal void PerformHint() {
         MoveHint hint = Solver.GetHint();
-        if(hint == null) {
+        if (hint == null) {
             Debug.Log("No valid move possible");
-            return false;
+            return;
         }
-
         hint.Solve();
-
-        return true;
     }
 
     public void SolveGrid() {
-        switch(solveSpeed) {
-            case SolveSpeed.Instant:
-                SolveGridInstant();
-                break;
-            case SolveSpeed.Fast:
-                StartCoroutine(SolveGridDelayed(0f));
-                break;
-            case SolveSpeed.Slow:
-                StartCoroutine(SolveGridDelayed(.2f));
-                break;
-        }
-    }
-
-    public IEnumerator SolveGridDelayed(float delay) {
-        bool hasSolvableMoves = true;
-        while (hasSolvableMoves) {
-            hasSolvableMoves = PerformHint();
-            yield return new WaitForSeconds(delay);
-        }
-    }
-
-    public void SolveGridInstant() {
-        bool hasSolvableMoves = true;
-        while (hasSolvableMoves) {
-            hasSolvableMoves = PerformHint();
+        while (Solver.GetHint() != null) {
+            PerformHint();
         }
     }
 }

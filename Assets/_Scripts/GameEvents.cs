@@ -17,6 +17,9 @@ class GameEvents {
     public static event Action OnGameWon;
         
     public static event Action<List<(int, int)>> OnCellsHighlighted;
+    public static event Action OnShowHintClicked;
+    public static event Action OnPerformHintClicked;
+    public static event Action OnSolveGridClicked;
 
     public static event Action OnNewGame;
     public static event Action<int, int, Difficulty> OnGridInitialized;
@@ -35,5 +38,8 @@ class GameEvents {
     public static void FlagCounterUpdate(int newValue) => OnFlagCounterUpdate?.Invoke(newValue);
     public static void HighlightCells(List<(int, int)> cellsToHighlight) => OnCellsHighlighted?.Invoke(cellsToHighlight);
     public static void GameWon() => OnGameWon?.Invoke();
-    public static void UpdateActiveCells(List<(int,int)> activeCells) => OnUpdateActiveCells?.Invoke(activeCells);
+    public static void UpdateActiveCells(List<(int, int)> activeCells) => OnUpdateActiveCells?.Invoke(activeCells);
+    public static void ShowHintClicked() => OnShowHintClicked?.Invoke();
+    public static void PerformHintClicked() => OnPerformHintClicked?.Invoke();
+    public static void SolveGridClicked() => OnSolveGridClicked?.Invoke();
 }

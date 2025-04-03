@@ -122,14 +122,10 @@ public class MinesweeperGrid {
 
     #region Revealing Cells
 
-    public void RevealCell(Cell cell) {
+    private void RevealSingleCell(Cell cell) {
         if (cell.IsRevealed) return;
         RevealedCells++;
         cell.IsRevealed = true;
-
-        foreach(var neighbour in GetCellNeighbours(cell)) {
-
-        }
 
         if (cell.IsMine) {
             GameEvents.MineCellRevealed(cell.Row, cell.Col);
@@ -143,19 +139,18 @@ public class MinesweeperGrid {
 
     }
 
-    public void RevealCellCascading(Cell cell) {
+    public void RevealCell(Cell cell) {
         Queue<Cell> queue = new Queue<Cell>();
         HashSet<Cell> cellsToUpdate = new HashSet<Cell>();
 
         queue.Enqueue(cell);
-        cellsToUpdate.Add(cell);
 
         while (queue.Count > 0) {
             Cell currentCell = queue.Dequeue();
             if (currentCell.IsRevealed || currentCell.IsFlagged) continue;
 
             cellsToUpdate.Add(currentCell);
-            RevealCell(currentCell);
+            RevealSingleCell(currentCell);
             if (currentCell.IsMine) break;
 
             var neighbours = GetCellNeighbours(currentCell);
@@ -175,13 +170,12 @@ public class MinesweeperGrid {
 
     public void RevealNeighbours(Cell cell) {
         foreach (Cell neighbour in GetCellNeighbours(cell)) {
-            RevealCellCascading(neighbour);
+            RevealCell(neighbour);
         }
         UpdateCellActiveStatus(cell);
     }
     #endregion
 
-    #region
     private void UpdateCellActiveStatus(Cell cell) {
         if(cell.IsRevealed) {
             var unrevealedNeighbours = GetUnrevealedNeighbours(cell);
@@ -217,6 +211,4 @@ public class MinesweeperGrid {
         }
         GameEvents.UpdateActiveCells(ActiveCells.Select(c => (c.Row, c.Col)).ToList());
     }
-
-    #endregion
 }

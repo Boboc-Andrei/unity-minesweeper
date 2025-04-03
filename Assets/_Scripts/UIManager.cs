@@ -13,7 +13,6 @@ public class UIManager : MonoBehaviour {
     private bool ShowActiveCells = true;
 
     public VisualElement root;
-    public GameManager gameManager;
 
     private Button newGameButton;
     private Label hintLabel;
@@ -61,19 +60,19 @@ public class UIManager : MonoBehaviour {
 
         hintButton.RegisterCallback<ClickEvent>(evt => {
             if (evt.button == 0) {
-                gameManager.ShowHint();
+                GameEvents.ShowHintClicked();
             }
         });
 
         doHintButton.RegisterCallback<ClickEvent>(evt => {
             if (evt.button == 0) {
-                gameManager.PerformHint();
+                GameEvents.PerformHintClicked();
             }
         });
 
         solveButton.RegisterCallback<ClickEvent>(evt => {
             if (evt.button == 0) {
-                gameManager.SolveGrid();
+                GameEvents.SolveGridClicked();
             }
         });
 

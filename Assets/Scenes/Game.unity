@@ -344,8 +344,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1556813274}
-  - component: {fileID: 1556813273}
   - component: {fileID: 1556813275}
+  - component: {fileID: 1556813276}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -353,25 +353,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1556813273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1556813272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b27fbed0cadf35040a2092cbe7af05c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultEasy: {fileID: 11400000, guid: 2e76c80656d619a459daa8785544a30c, type: 2}
-  defaultMedium: {fileID: 11400000, guid: ffb07a0a89e894544a62d50e8b0e91d1, type: 2}
-  defaultHard: {fileID: 11400000, guid: 8044d8a4895d4fc45af79704f6576317, type: 2}
-  defaultExtreme: {fileID: 11400000, guid: 0f6f1413c8017d54ba64c81f9767c2c7, type: 2}
-  solveSpeed: 1
-  _currentDifficulty: 0
-  StartNewGameOnDifficultyChange: 1
 --- !u!4 &1556813274
 Transform:
   m_ObjectHideFlags: 0
@@ -397,6 +378,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d329799dfd01db24a9fe45843899b0c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1556813276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1556813272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21cb18c11fa493a49beacdf89c7c2c2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2074768303
@@ -515,7 +508,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowActiveCells: 0
-  gameManager: {fileID: 1556813273}
   sprites: {fileID: 11400000, guid: 303a124cd2f0aa6409381d8796b37308, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
