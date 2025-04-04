@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 public enum Difficulty {
     Easy, Medium, Hard, Extreme
@@ -13,10 +10,9 @@ public enum Difficulty {
 
 public class GameManager {
 
-    private Dictionary<Difficulty, DifficultySettingsJson> defaultDifficulties;
-    private DifficultySettingsJson currentDifficultySettings => defaultDifficulties[CurrentDifficulty];
+    private Dictionary<Difficulty, DifficultySettings> defaultDifficulties;
+    private DifficultySettings currentDifficultySettings => defaultDifficulties[CurrentDifficulty];
 
-    [SerializeField]
     private Difficulty _currentDifficulty = Difficulty.Medium;
     public Difficulty CurrentDifficulty {
         get {
@@ -32,7 +28,6 @@ public class GameManager {
     public int GridCols => currentDifficultySettings.Cols;
     public int Mines => currentDifficultySettings.Mines;
 
-    [SerializeField]
     private bool StartNewGameOnDifficultyChange = true;
 
     public MinesweeperGrid Grid;
@@ -41,24 +36,11 @@ public class GameManager {
 
     private bool GameStarted = false;
 
-    public GameManager(string defaultDifficultiesPath) {
-        SetupDefaultDifficulties(defaultDifficultiesPath);
-    }
+    private IDifficultyLoader difficultyLoader;
 
-    private void SetupDefaultDifficulties(string defaultDifficultiesPath) {
-        TextAsset jsonFile = Resources.Load<TextAsset>(defaultDifficultiesPath);
-        if (jsonFile == null) {
-            Debug.LogError("Failed to load JSON file.");
-            return;
-        }
-        var difficultyOptions = JsonUtility.FromJson<DefaultDifficultySettingsJson>(jsonFile.text);
-
-        if (difficultyOptions == null || difficultyOptions.Items == null) {
-            Debug.LogError("difficultyOptions is NULL or empty.");
-            return;
-        }
-
-        defaultDifficulties = difficultyOptions.Items.ToDictionary(d => Enum.Parse<Difficulty>(d.Name), d => d);
+    public GameManager(IDifficultyLoader _difficultyLoader) {
+        difficultyLoader = _difficultyLoader;
+        defaultDifficulties = difficultyLoader.Load();
     }
 
     public void SubscribeToEvents() {
@@ -147,7 +129,7 @@ public class GameManager {
     internal void ShowHint() {
         MoveHint hint = Solver.GetHint(dequeue: false);
         if (hint == null) {
-            Debug.Log("Unable to provide hint");
+            DebugLog.Log("Unable to provide hint");
             return;
         }
 
@@ -158,7 +140,7 @@ public class GameManager {
     internal void PerformHint() {
         MoveHint hint = Solver.GetHint();
         if (hint == null) {
-            Debug.Log("No valid move possible");
+            DebugLog.Log("No valid move possible");
             return;
         }
         hint.Solve();

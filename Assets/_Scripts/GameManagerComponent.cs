@@ -3,7 +3,7 @@ using UnityEngine;
 public class GameManagerComponent : MonoBehaviour {
     GameManager manager;
     private void Awake() {
-        manager = new GameManager("defaultDifficulties");
+        manager = new GameManager(new UnityDifficultyJsonLoader("defaultDifficulties"));
     }
 
     void Start() {
