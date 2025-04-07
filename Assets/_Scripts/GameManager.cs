@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
+using UnityEngine;
 
 public enum Difficulty {
     Easy, Medium, Hard, Extreme
@@ -24,6 +27,10 @@ public class GameManager {
         }
     }
 
+    private DateTime startTime;
+    public TimeSpan runningTime => DateTime.Now - startTime;
+    public static TimeSpan hintTimePenalty = new TimeSpan(0, 0, 10);
+
     public int GridRows => currentDifficultySettings.Rows;
     public int GridCols => currentDifficultySettings.Cols;
     public int Mines => currentDifficultySettings.Mines;
@@ -34,7 +41,9 @@ public class GameManager {
     public GridGenerator GridGenerator;
     public MinesweeperSolver Solver;
 
+
     private bool GameStarted = false;
+    private int HintsUsed = 0;
 
     private IDifficultyLoader difficultyLoader;
 
@@ -68,14 +77,13 @@ public class GameManager {
     }
 
     public void NewGame() {
-        GridGenerator = new GridGenerator(Mines);
+        GridGenerator = new GridGenerator(currentDifficultySettings);
         Grid = new MinesweeperGrid(GridRows, GridCols, GridGenerator);
-        Grid.InitializeCells();
         GameEvents.GridInitialized(GridRows, GridCols, CurrentDifficulty);
         GameEvents.FlagCounterUpdate(Grid.MinesLeft);
-
         Solver = new MinesweeperSolver(Grid);
         GameStarted = false;
+        HintsUsed = 0;
     }
 
     public void DifficultyChanged(Difficulty newDifficulty) {
@@ -93,6 +101,7 @@ public class GameManager {
         if (!GameStarted) {
             GameStarted = true;
             Grid.PlaceMines(guaranteedFree: cell);
+            startTime = DateTime.Now;
         }
 
         if (cell.IsRevealed && cell.HasAllMinesFlagged) {
@@ -119,14 +128,27 @@ public class GameManager {
     }
 
     public void GameOver() {
-        DebugLog.Log("Game over sequence to be implemented");
+        LogGameStats(false);
     }
 
     public void GameWon() {
-        DebugLog.Log("Game won sequence to be implemented");
+        LogGameStats(true);
+
+    }
+
+    private void LogGameStats(bool gameWon) {
+        var serializedGrid = MinesweeperGridSerializer.Serialize(Grid);
+        MinesweeperGameRecord log = new MinesweeperGameRecord() {
+            GridId = serializedGrid.Id,
+            Time = runningTime,
+            IsGameWon = gameWon,
+            HintsUsed = HintsUsed
+        };
+        DebugLog.Log($"Game with Id {serializedGrid.Id} log:\nGame won: {gameWon}\nUsed hints: {HintsUsed}\n Time: {runningTime}");
     }
 
     internal void ShowHint() {
+        HintsUsed += 1;
         MoveHint hint = Solver.GetHint(dequeue: false);
         if (hint == null) {
             DebugLog.Log("Unable to provide hint");

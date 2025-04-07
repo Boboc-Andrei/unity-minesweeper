@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Linq;
 using System;
+
 public interface IDifficultyLoader {
     public Dictionary<Difficulty, DifficultySettings> Load();
 }
