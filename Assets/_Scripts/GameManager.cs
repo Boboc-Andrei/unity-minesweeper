@@ -144,7 +144,7 @@ public class GameManager {
             IsGameWon = gameWon,
             HintsUsed = HintsUsed
         };
-        DebugLog.Log($"Game with Id {serializedGrid.Id} log:\nGame won: {gameWon}\nUsed hints: {HintsUsed}\n Time: {runningTime}");
+        DebugLog.Log($"Game with Id {serializedGrid.Id} log:\nGame won: {gameWon}\nUsed hints: {HintsUsed}\n Time: {runningTime}\nTime with hints: {runningTime + HintsUsed * hintTimePenalty}");
     }
 
     internal void ShowHint() {
